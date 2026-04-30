@@ -1,13 +1,11 @@
 "use client";
 
 import {
-  CartesianGrid,
   Line,
   LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
 } from "recharts";
 import type { TimelineEvent } from "../lib/posts";
 
@@ -32,7 +30,6 @@ function TimelineTooltip({ active, payload }: TimelineTooltipProps) {
   return (
     <div className="border-2 border-line bg-background p-3 text-sm shadow-none">
       <p className="font-mono text-foreground">{event.month}</p>
-      <p className="mt-1 text-muted">{event.signalCount} signals</p>
       <div className="mt-3 flex flex-wrap gap-2">
         {event.keywords.map((keyword) => (
           <span key={keyword} className="rounded-md border-2 border-line px-2 py-1 text-xs text-muted">
@@ -45,29 +42,30 @@ function TimelineTooltip({ active, payload }: TimelineTooltipProps) {
 }
 
 export function TimelineChart({ events }: TimelineChartProps) {
+  const flatEvents = events.map((event) => ({
+    ...event,
+    position: 1,
+  }));
+
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart data={events} margin={{ top: 12, right: 8, bottom: 4, left: -24 }}>
-        <CartesianGrid stroke="var(--line)" strokeDasharray="0" vertical={false} />
+      <LineChart data={flatEvents} margin={{ top: 24, right: 20, bottom: 8, left: 20 }}>
         <XAxis
           dataKey="month"
           axisLine={{ stroke: "var(--line)", strokeWidth: 2 }}
           tick={{ fill: "var(--muted)", fontSize: 12 }}
           tickLine={{ stroke: "var(--line)", strokeWidth: 2 }}
+          interval={0}
+          padding={{ left: 20, right: 20 }}
         />
-        <YAxis
-          axisLine={{ stroke: "var(--line)", strokeWidth: 2 }}
-          tick={{ fill: "var(--muted)", fontSize: 12 }}
-          tickLine={false}
-          width={42}
-        />
-        <Tooltip content={<TimelineTooltip />} cursor={{ stroke: "var(--foreground)", strokeWidth: 2 }} />
+        <Tooltip content={<TimelineTooltip />} cursor={false} />
         <Line
-          type="monotone"
-          dataKey="signalCount"
+          type="linear"
+          dataKey="position"
           stroke="var(--foreground)"
-          strokeWidth={3}
-          dot={{ r: 5, fill: "var(--background)", stroke: "var(--foreground)", strokeWidth: 3 }}
+          strokeWidth={2}
+          isAnimationActive={false}
+          dot={{ r: 5, fill: "var(--background)", stroke: "var(--foreground)", strokeWidth: 2 }}
           activeDot={{ r: 7, fill: "var(--foreground)", stroke: "var(--foreground)", strokeWidth: 2 }}
         />
       </LineChart>

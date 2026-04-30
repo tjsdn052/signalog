@@ -17,13 +17,11 @@ export function TimelinePreview({ events }: TimelinePreviewProps) {
       <div className="mx-auto max-w-6xl px-5 py-12">
         <div className="mb-6">
           <p className="text-sm font-medium text-accent">Timeline</p>
-          <h2 className="mt-2 text-2xl font-semibold">기술 흐름 그래프</h2>
+          <h2 className="mt-2 text-2xl font-semibold">기술 흐름 타임라인</h2>
         </div>
 
-        <div className="border-2 border-line bg-panel p-4">
-          <div className="h-[280px] min-w-0">
-            <TimelineChart events={events} />
-          </div>
+        <div className="h-[150px] min-w-0">
+          <TimelineChart events={events} />
         </div>
       </div>
     </section>

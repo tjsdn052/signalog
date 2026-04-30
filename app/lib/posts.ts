@@ -15,7 +15,6 @@ export type SignalPost = {
 
 export type TimelineEvent = {
   month: string;
-  signalCount: number;
   keywords: string[];
 };
 
@@ -145,22 +144,18 @@ export const posts: SignalPost[] = [
 export const timelineEvents: TimelineEvent[] = [
   {
     month: "2026.01",
-    signalCount: 8,
     keywords: ["Transformer", "RAG", "Vector DB"],
   },
   {
     month: "2026.02",
-    signalCount: 13,
     keywords: ["MCP", "Agents", "Workflow"],
   },
   {
     month: "2026.03",
-    signalCount: 18,
     keywords: ["Hermes", "React Native", "Runtime"],
   },
   {
     month: "2026.04",
-    signalCount: 26,
     keywords: ["Agentic AI", "Vercel AI SDK", "Local AI"],
   },
 ];
