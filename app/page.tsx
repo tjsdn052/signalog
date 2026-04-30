@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-line">
+      <header className="border-b-2 border-line">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
           <Link href="/" className="flex items-center gap-3">
             <span className="flex size-9 items-center justify-center rounded-md bg-foreground text-background">
@@ -41,10 +41,10 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="border-b border-line">
+      <section className="border-b-2 border-line">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-line bg-panel px-3 py-1.5 text-sm text-muted">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-md border-2 border-line bg-panel px-3 py-1.5 text-sm text-muted">
               <Sparkles size={15} aria-hidden="true" />
               AI가 수집하고 번역한 기술 트렌드
             </div>
@@ -64,7 +64,7 @@ export default function Home() {
               </a>
               <a
                 href="#timeline"
-                className="inline-flex items-center gap-2 rounded-md border border-line bg-panel px-4 py-2.5 text-sm font-medium"
+                className="inline-flex items-center gap-2 rounded-md border-2 border-line bg-panel px-4 py-2.5 text-sm font-medium"
               >
                 <CalendarDays size={16} aria-hidden="true" />
                 연대표 보기
@@ -72,7 +72,7 @@ export default function Home() {
             </div>
           </div>
 
-          <article className="border border-line bg-panel p-5">
+          <article className="border-2 border-line bg-panel p-5">
             <div className="flex items-center justify-between gap-3 text-sm text-muted">
               <span className="inline-flex items-center gap-2">
                 <TrendingUp size={15} aria-hidden="true" />
@@ -88,7 +88,7 @@ export default function Home() {
             <p className="mt-4 leading-7 text-muted">{featuredPost.excerpt}</p>
             <div className="mt-6 flex flex-wrap gap-2">
               {featuredPost.tags.map((tag) => (
-                <span key={tag} className="rounded-md border border-line px-2.5 py-1 text-xs text-muted">
+                <span key={tag} className="rounded-md border-2 border-line px-2.5 py-1 text-xs text-muted">
                   {tag}
                 </span>
               ))}
@@ -110,7 +110,7 @@ export default function Home() {
             <p className="text-sm font-medium text-accent">Latest Signals</p>
             <h2 className="mt-2 text-2xl font-semibold">최근 수집된 글</h2>
           </div>
-          <div className="hidden items-center gap-2 border border-line bg-panel px-3 py-2 text-sm text-muted sm:flex">
+          <div className="hidden items-center gap-2 border-2 border-line bg-panel px-3 py-2 text-sm text-muted sm:flex">
             <Search size={15} aria-hidden="true" />
             검색은 곧 추가됩니다
           </div>
@@ -118,7 +118,7 @@ export default function Home() {
 
         <div className="grid gap-4 md:grid-cols-2">
           {latestPosts.map((post) => (
-            <article key={post.slug} className="border border-line bg-panel p-5">
+            <article key={post.slug} className="border-2 border-line bg-panel p-5">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted">
                 <span>{post.category}</span>
                 <span className="inline-flex items-center gap-1.5">
@@ -141,13 +141,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="timeline" className="border-t border-line">
+      <section id="timeline" className="border-t-2 border-line">
         <div className="mx-auto max-w-6xl px-5 py-12">
           <p className="text-sm font-medium text-accent">Timeline</p>
           <h2 className="mt-2 text-2xl font-semibold">기술 흐름 연대표</h2>
           <div className="mt-6 grid gap-3 md:grid-cols-4">
             {timelineEvents.map((event) => (
-              <div key={event.year} className="border-l border-line pl-4">
+              <div key={event.year} className="border-l-2 border-line pl-4">
                 <span className="font-mono text-sm text-accent">{event.year}</span>
                 <h3 className="mt-2 font-semibold">{event.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-muted">{event.description}</p>

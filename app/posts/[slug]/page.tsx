@@ -51,7 +51,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-line">
+      <header className="border-b-2 border-line">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-5">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground">
             <ArrowLeft size={16} aria-hidden="true" />
@@ -71,7 +71,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
       <article className="mx-auto max-w-4xl px-5 py-10">
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted">
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-panel px-2.5 py-1">
+          <span className="inline-flex items-center gap-1.5 rounded-md border-2 border-line bg-panel px-2.5 py-1">
             <TrendingUp size={14} aria-hidden="true" />
             Signal {post.signalScore}
           </span>
@@ -94,7 +94,7 @@ export default async function PostPage({ params }: PostPageProps) {
         </h1>
         <p className="mt-5 text-lg leading-8 text-muted">{post.excerpt}</p>
 
-        <section className="mt-8 border border-line bg-panel p-5">
+        <section className="mt-8 border-2 border-line bg-panel p-5">
           <div className="flex items-center gap-2 text-sm font-medium text-accent">
             <Bot size={16} aria-hidden="true" />
             AI 요약
@@ -104,14 +104,14 @@ export default async function PostPage({ params }: PostPageProps) {
 
         <div className="mt-8 flex flex-wrap gap-2">
           {post.tags.map((tag) => (
-            <span key={tag} className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1 text-sm text-muted">
+            <span key={tag} className="inline-flex items-center gap-1.5 rounded-md border-2 border-line px-2.5 py-1 text-sm text-muted">
               <Tag size={13} aria-hidden="true" />
               {tag}
             </span>
           ))}
         </div>
 
-        <div className="mt-10 border-t border-line pt-8">
+        <div className="mt-10 border-t-2 border-line pt-8">
           <p className="text-sm text-muted">
             출처:{" "}
             <a href={post.sourceUrl} target="_blank" rel="noreferrer" className="font-medium text-foreground underline">
@@ -128,7 +128,7 @@ export default async function PostPage({ params }: PostPageProps) {
           ))}
         </div>
 
-        <footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+        <footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t-2 border-line pt-6">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium">
             <ArrowLeft size={16} aria-hidden="true" />
             홈으로
