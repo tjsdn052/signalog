@@ -1,16 +1,11 @@
-import {
-  ArrowLeft,
-  ArrowUpRight,
-  Bot,
-  CalendarDays,
-  Clock3,
-  ExternalLink,
-  Languages,
-  Tag,
-  TrendingUp,
-} from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AiSummaryBox } from "../../components/ai-summary-box";
+import { PostBody } from "../../components/post-body";
+import { PostDetailHeader } from "../../components/post-detail-header";
+import { PostFooterActions } from "../../components/post-footer-actions";
+import { PostMeta } from "../../components/post-meta";
+import { PostSource } from "../../components/post-source";
+import { TagBadge } from "../../components/tag-badge";
 import { getPostBySlug, posts } from "../../lib/posts";
 
 type PostPageProps = {
@@ -51,98 +46,29 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-line">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-5">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground">
-            <ArrowLeft size={16} aria-hidden="true" />
-            시그널 목록
-          </Link>
-          <a
-            href={post.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground"
-          >
-            원문
-            <ExternalLink size={15} aria-hidden="true" />
-          </a>
-        </div>
-      </header>
+      <PostDetailHeader post={post} />
 
       <article className="mx-auto max-w-4xl px-5 py-10">
-        <div className="flex flex-wrap items-center gap-3 text-sm text-muted">
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-panel px-2.5 py-1">
-            <TrendingUp size={14} aria-hidden="true" />
-            Signal {post.signalScore}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <CalendarDays size={14} aria-hidden="true" />
-            {post.publishedAt}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock3 size={14} aria-hidden="true" />
-            {post.readingMinutes}분 읽기
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Languages size={14} aria-hidden="true" />
-            한국어 번역
-          </span>
-        </div>
+        <PostMeta post={post} showDate showSignal />
 
         <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
           {post.title}
         </h1>
         <p className="mt-5 text-lg leading-8 text-muted">{post.excerpt}</p>
 
-        <section className="mt-8 border border-line bg-panel p-5">
-          <div className="flex items-center gap-2 text-sm font-medium text-accent">
-            <Bot size={16} aria-hidden="true" />
-            AI 요약
-          </div>
-          <p className="mt-3 leading-7 text-muted">{post.summary}</p>
-        </section>
+        <AiSummaryBox summary={post.summary} />
 
         <div className="mt-8 flex flex-wrap gap-2">
           {post.tags.map((tag) => (
-            <span key={tag} className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1 text-sm text-muted">
-              <Tag size={13} aria-hidden="true" />
+            <TagBadge key={tag} showIcon>
               {tag}
-            </span>
+            </TagBadge>
           ))}
         </div>
 
-        <div className="mt-10 border-t border-line pt-8">
-          <p className="text-sm text-muted">
-            출처:{" "}
-            <a href={post.sourceUrl} target="_blank" rel="noreferrer" className="font-medium text-foreground underline">
-              {post.source}
-            </a>
-          </p>
-        </div>
-
-        <div className="prose prose-neutral mt-10 max-w-none dark:prose-invert">
-          {post.body.map((paragraph) => (
-            <p key={paragraph} className="mb-5 text-lg leading-9 text-foreground">
-              {paragraph}
-            </p>
-          ))}
-        </div>
-
-        <footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium">
-            <ArrowLeft size={16} aria-hidden="true" />
-            홈으로
-          </Link>
-          <a
-            href={post.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2.5 text-sm font-medium text-background"
-          >
-            원문 열기
-            <ArrowUpRight size={16} aria-hidden="true" />
-          </a>
-        </footer>
+        <PostSource post={post} />
+        <PostBody paragraphs={post.body} />
+        <PostFooterActions post={post} />
       </article>
     </main>
   );
