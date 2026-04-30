@@ -33,7 +33,7 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
 
         <CarouselContent className="-ml-4">
           {latestPosts.map((post) => (
-            <CarouselItem key={post.slug} className="pl-4 sm:basis-1/2 lg:basis-1/3">
+            <CarouselItem key={post.slug} className="flex pl-4 sm:basis-1/2 lg:basis-1/3">
               <PostCard post={post} />
             </CarouselItem>
           ))}

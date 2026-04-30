@@ -9,8 +9,8 @@ type PostCardProps = {
 
 export function PostCard({ post }: PostCardProps) {
   return (
-    <Card className="rounded-none border-2 border-line bg-panel py-0 shadow-none ring-0">
-      <CardContent className="p-5">
+    <Card className="h-[260px] w-full rounded-none border-2 border-line bg-panel py-0 shadow-none ring-0 sm:h-[280px]">
+      <CardContent className="flex h-full flex-col p-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted">
           <span>{post.category}</span>
           <span className="inline-flex items-center gap-1.5">
@@ -22,7 +22,7 @@ export function PostCard({ post }: PostCardProps) {
             번역됨
           </span>
         </div>
-        <h3 className="mt-4 text-xl font-semibold leading-snug">
+        <h3 className="mt-4 line-clamp-2 text-xl font-semibold leading-snug">
           <Link href={`/posts/${post.slug}`} className="hover:underline">
             {post.title}
           </Link>
