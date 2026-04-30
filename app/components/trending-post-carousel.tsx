@@ -24,7 +24,7 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
           <CarouselContent className="-ml-0">
             {posts.map((post) => (
               <CarouselItem key={post.slug} className="pl-0">
-                <article className="min-h-[300px] border-2 border-line bg-panel p-5 sm:min-h-[360px] sm:p-6">
+                <article className="min-h-75 border-2 border-line bg-panel p-5 sm:min-h-90 sm:p-6">
                   <div className="flex items-center justify-between gap-3 text-sm text-muted">
                     <span className="inline-flex items-center gap-2">
                       <TrendingUp size={15} aria-hidden="true" />

@@ -9,7 +9,7 @@ type PostCardProps = {
 
 export function PostCard({ post }: PostCardProps) {
   return (
-    <Card className="h-[220px] w-full rounded-none border-2 border-line bg-panel py-0 shadow-none ring-0 sm:h-[240px]">
+    <Card className="h-55 w-full rounded-none border-2 border-line bg-panel py-0 shadow-none ring-0 sm:h-60">
       <CardContent className="flex h-full flex-col p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted">
           <span>{post.category}</span>

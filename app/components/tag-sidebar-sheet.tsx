@@ -32,7 +32,7 @@ export function TagSidebarSheet({ posts }: TagSidebarSheetProps) {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="w-[320px] border-r-2 border-line bg-background p-0 text-foreground sm:max-w-[360px]"
+        className="w-80 border-r-2 border-line bg-background p-0 text-foreground sm:max-w-90"
       >
         <SheetHeader className="border-b-2 border-line p-5">
           <SheetTitle className="text-2xl font-semibold">태그 탐색</SheetTitle>
