@@ -26,13 +26,9 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
             <p className="text-sm font-medium text-accent">Latest Signals</p>
             <h2 className="mt-2 text-2xl font-semibold">최근 수집된 글</h2>
           </div>
-          <div className="hidden items-center gap-3 sm:flex">
-            <Link href="/posts" className="text-sm font-medium text-muted hover:text-foreground">
-              전체 보기
-            </Link>
-            <CarouselPrevious className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
-            <CarouselNext className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
-          </div>
+          <Link href="/posts" className="pb-0.5 text-sm font-medium text-muted hover:text-foreground">
+            전체 보기
+          </Link>
         </div>
 
         <CarouselContent className="-ml-4">
@@ -42,11 +38,7 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="mt-4 flex items-center gap-3 sm:hidden">
-          <div className="mr-auto" />
-          <Link href="/posts" className="text-sm font-medium text-muted hover:text-foreground">
-            전체 보기
-          </Link>
+        <div className="mt-4 flex items-center justify-end gap-3">
           <CarouselPrevious className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
           <CarouselNext className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
         </div>
