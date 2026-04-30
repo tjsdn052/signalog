@@ -18,7 +18,7 @@ export function SiteHeader({ posts }: SiteHeaderProps) {
               <Rss size={18} aria-hidden="true" />
             </span>
             <span>
-              <span className="block text-base font-semibold">시그널로그</span>
+              <span className="block text-base font-semibold">SIG</span>
               <span className="block text-xs text-muted">Signalog</span>
             </span>
           </Link>
