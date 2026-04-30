@@ -14,10 +14,9 @@ export type SignalPost = {
 };
 
 export type TimelineEvent = {
-  year: string;
-  title: string;
-  description: string;
-  tags: string[];
+  month: string;
+  signalCount: number;
+  keywords: string[];
 };
 
 export const posts: SignalPost[] = [
@@ -145,28 +144,24 @@ export const posts: SignalPost[] = [
 
 export const timelineEvents: TimelineEvent[] = [
   {
-    year: "2017",
-    title: "Transformer 등장",
-    description: "대규모 언어 모델 시대의 기반 구조가 된 Attention 중심 아키텍처가 확산됐습니다.",
-    tags: ["Transformer", "NLP"],
+    month: "2026.01",
+    signalCount: 8,
+    keywords: ["Transformer", "RAG", "Vector DB"],
   },
   {
-    year: "2022",
-    title: "ChatGPT 대중화",
-    description: "LLM이 개발자 도구를 넘어 일반 사용자 서비스의 중심 인터페이스로 올라섰습니다.",
-    tags: ["ChatGPT", "Prompt"],
+    month: "2026.02",
+    signalCount: 13,
+    keywords: ["MCP", "Agents", "Workflow"],
   },
   {
-    year: "2024",
-    title: "멀티모달 경쟁",
-    description: "텍스트, 이미지, 음성 입력을 다루는 모델 경쟁이 제품 경험으로 연결되기 시작했습니다.",
-    tags: ["Multimodal", "Realtime"],
+    month: "2026.03",
+    signalCount: 18,
+    keywords: ["Hermes", "React Native", "Runtime"],
   },
   {
-    year: "2026",
-    title: "에이전틱 AI 확산",
-    description: "AI가 답변 생성에서 작업 실행 계층으로 이동하며 워크플로우 자동화가 핵심 주제가 됐습니다.",
-    tags: ["Agents", "Automation"],
+    month: "2026.04",
+    signalCount: 26,
+    keywords: ["Agentic AI", "Vercel AI SDK", "Local AI"],
   },
 ];
 
