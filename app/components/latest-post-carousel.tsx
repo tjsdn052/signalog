@@ -18,7 +18,7 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
   const latestPosts = posts.slice(0, 5);
 
   return (
-    <section id="signals" className="mx-auto max-w-6xl px-5 py-12">
+    <section id="signals" className="min-w-0">
       <Carousel opts={{ align: "start", loop: true }} className="relative">
         <div className="mb-6 flex items-end justify-between gap-6">
           <div>
