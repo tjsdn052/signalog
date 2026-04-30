@@ -1,15 +1,11 @@
 import {
-  ArrowLeft,
-  ArrowUpRight,
   Bot,
   CalendarDays,
   Clock3,
-  ExternalLink,
   Languages,
   Tag,
   TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPostBySlug, posts } from "../../lib/posts";
 
@@ -51,24 +47,6 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b-2 border-line">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-5">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground">
-            <ArrowLeft size={16} aria-hidden="true" />
-            시그널 목록
-          </Link>
-          <a
-            href={post.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground"
-          >
-            원문
-            <ExternalLink size={15} aria-hidden="true" />
-          </a>
-        </div>
-      </header>
-
       <article className="mx-auto max-w-4xl px-5 py-10">
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted">
           <span className="inline-flex items-center gap-1.5 rounded-md border-2 border-line bg-panel px-2.5 py-1">
@@ -127,22 +105,6 @@ export default async function PostPage({ params }: PostPageProps) {
             </p>
           ))}
         </div>
-
-        <footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t-2 border-line pt-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium">
-            <ArrowLeft size={16} aria-hidden="true" />
-            홈으로
-          </Link>
-          <a
-            href={post.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2.5 text-sm font-medium text-background"
-          >
-            원문 열기
-            <ArrowUpRight size={16} aria-hidden="true" />
-          </a>
-        </footer>
       </article>
     </main>
   );
