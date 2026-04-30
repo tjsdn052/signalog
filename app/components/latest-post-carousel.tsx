@@ -19,7 +19,7 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
 
   return (
     <section id="signals" className="mx-auto max-w-6xl px-5 py-12">
-      <Carousel opts={{ align: "start" }} className="relative">
+      <Carousel opts={{ align: "start", loop: true }} className="relative">
         <div className="mb-6 flex items-end justify-between gap-6">
           <div>
             <p className="text-sm font-medium text-accent">Latest Signals</p>
