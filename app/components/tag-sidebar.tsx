@@ -27,6 +27,12 @@ function getTagSummaries(posts: SignalPost[]): TagSummary[] {
 export function TagSidebar({ posts, variant = "panel" }: TagSidebarProps) {
   const tags = getTagSummaries(posts);
   const isSheet = variant === "sheet";
+  const tagListClassName = isSheet
+    ? "mt-5 flex flex-col gap-2"
+    : "mt-5 flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0";
+  const tagLinkClassName = isSheet
+    ? "inline-flex w-full items-center justify-between gap-4 rounded-md border-2 border-line px-3 py-2 text-sm"
+    : "inline-flex shrink-0 items-center justify-between gap-4 rounded-md border-2 border-line px-3 py-2 text-sm lg:w-full";
 
   return (
     <aside className={isSheet ? "" : "border-2 border-line bg-panel p-5 lg:sticky lg:top-6 lg:self-start"}>
@@ -35,10 +41,10 @@ export function TagSidebar({ posts, variant = "panel" }: TagSidebarProps) {
         <h2 className="mt-2 text-2xl font-semibold">태그</h2>
       </div>
 
-      <div className="mt-5 flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+      <div className={tagListClassName}>
         <a
           href="#signals"
-          className="inline-flex shrink-0 items-center justify-between gap-4 rounded-md border-2 border-line bg-foreground px-3 py-2 text-sm font-medium text-background lg:w-full"
+          className={`${tagLinkClassName} bg-foreground font-medium text-background`}
         >
           전체
           <span className="font-mono text-xs">{posts.length}</span>
@@ -47,7 +53,7 @@ export function TagSidebar({ posts, variant = "panel" }: TagSidebarProps) {
           <a
             key={tag.name}
             href="#signals"
-            className="inline-flex shrink-0 items-center justify-between gap-4 rounded-md border-2 border-line px-3 py-2 text-sm text-muted hover:text-foreground lg:w-full"
+            className={`${tagLinkClassName} text-muted hover:text-foreground`}
           >
             {tag.name}
             <span className="font-mono text-xs">{tag.count}</span>
