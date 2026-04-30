@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SiteFooter } from "./components/site-footer";
 import { SiteHeader } from "./components/site-header";
 import "./globals.css";
 import { posts } from "./lib/posts";
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body className="min-h-full bg-background text-foreground antialiased">
         <SiteHeader posts={posts} />
         {children}
+        <SiteFooter posts={posts} />
       </body>
     </html>
   );
