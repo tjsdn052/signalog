@@ -30,7 +30,7 @@ export default function RootLayout({
       <body className="min-h-full bg-background text-foreground antialiased">
         <SiteHeader posts={posts} />
         {children}
-        <SiteFooter posts={posts} />
+        <SiteFooter />
       </body>
     </html>
   );
