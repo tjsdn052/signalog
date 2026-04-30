@@ -24,7 +24,7 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
           <CarouselContent className="-ml-0">
             {posts.map((post) => (
               <CarouselItem key={post.slug} className="pl-0">
-                <article className="min-h-[520px] border-2 border-line bg-panel p-6 sm:p-8">
+                <article className="min-h-[360px] border-2 border-line bg-panel p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3 text-sm text-muted">
                     <span className="inline-flex items-center gap-2">
                       <TrendingUp size={15} aria-hidden="true" />
@@ -32,20 +32,20 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
                     </span>
                     <span>{post.category}</span>
                   </div>
-                  <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-tight tracking-normal sm:text-6xl">
+                  <h1 className="mt-5 max-w-4xl text-3xl font-semibold leading-tight tracking-normal sm:text-5xl">
                     <Link href={`/posts/${post.slug}`} className="hover:underline">
                       {post.title}
                     </Link>
                   </h1>
-                  <p className="mt-6 max-w-3xl text-lg leading-8 text-muted">{post.excerpt}</p>
-                  <div className="mt-6 flex flex-wrap gap-2">
+                  <p className="mt-5 max-w-3xl text-base leading-7 text-muted sm:text-lg">{post.excerpt}</p>
+                  <div className="mt-5 flex flex-wrap gap-2">
                     {post.tags.map((tag) => (
                       <TagBadge key={tag}>{tag}</TagBadge>
                     ))}
                   </div>
                   <Link
                     href={`/posts/${post.slug}`}
-                    className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-accent"
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-accent"
                   >
                     번역 요약 읽기
                     <ArrowUpRight size={16} aria-hidden="true" />
@@ -54,8 +54,8 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="bottom-6 left-auto right-20 top-auto size-9 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
-          <CarouselNext className="bottom-6 left-auto right-6 top-auto size-9 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
+          <CarouselPrevious className="bottom-5 left-auto right-18 top-auto size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
+          <CarouselNext className="bottom-5 left-auto right-5 top-auto size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
         </Carousel>
       </div>
     </section>
