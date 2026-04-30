@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -26,6 +27,9 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
             <h2 className="mt-2 text-2xl font-semibold">최근 수집된 글</h2>
           </div>
           <div className="hidden items-center gap-3 sm:flex">
+            <Link href="/posts" className="text-sm font-medium text-muted hover:text-foreground">
+              전체 보기
+            </Link>
             <CarouselPrevious className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
             <CarouselNext className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
           </div>
@@ -39,6 +43,9 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
           ))}
         </CarouselContent>
         <div className="mt-4 flex items-center gap-3 sm:hidden">
+          <Link href="/posts" className="mr-auto text-sm font-medium text-muted hover:text-foreground">
+            전체 보기
+          </Link>
           <CarouselPrevious className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
           <CarouselNext className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
         </div>
