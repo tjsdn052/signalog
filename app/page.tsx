@@ -1,11 +1,9 @@
 import {
   ArrowUpRight,
-  CalendarDays,
   Clock3,
   Languages,
   Rss,
   Search,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
@@ -42,37 +40,8 @@ export default function Home() {
       </header>
 
       <section className="border-b-2 border-line">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
-          <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-md border-2 border-line bg-panel px-3 py-1.5 text-sm text-muted">
-              <Sparkles size={15} aria-hidden="true" />
-              AI가 수집하고 번역한 기술 트렌드
-            </div>
-            <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-normal sm:text-6xl">
-              오늘의 기술 신호가 내일의 연대기가 됩니다.
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">
-              시그널로그는 핫한 개발/AI 게시글을 모으고 번역하며, 시간이 지나도 다시 읽을 수 있는 기술 흐름으로 정리합니다.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#signals"
-                className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2.5 text-sm font-medium text-background"
-              >
-                <TrendingUp size={16} aria-hidden="true" />
-                시그널 보기
-              </a>
-              <a
-                href="#timeline"
-                className="inline-flex items-center gap-2 rounded-md border-2 border-line bg-panel px-4 py-2.5 text-sm font-medium"
-              >
-                <CalendarDays size={16} aria-hidden="true" />
-                연대표 보기
-              </a>
-            </div>
-          </div>
-
-          <article className="border-2 border-line bg-panel p-5">
+        <div className="mx-auto max-w-6xl px-5 py-12 lg:py-16">
+          <article className="border-2 border-line bg-panel p-6 sm:p-8">
             <div className="flex items-center justify-between gap-3 text-sm text-muted">
               <span className="inline-flex items-center gap-2">
                 <TrendingUp size={15} aria-hidden="true" />
@@ -80,12 +49,12 @@ export default function Home() {
               </span>
               <span>{featuredPost.category}</span>
             </div>
-            <h2 className="mt-6 text-2xl font-semibold leading-snug">
+            <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-tight tracking-normal sm:text-6xl">
               <Link href={`/posts/${featuredPost.slug}`} className="hover:underline">
                 {featuredPost.title}
               </Link>
-            </h2>
-            <p className="mt-4 leading-7 text-muted">{featuredPost.excerpt}</p>
+            </h1>
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-muted">{featuredPost.excerpt}</p>
             <div className="mt-6 flex flex-wrap gap-2">
               {featuredPost.tags.map((tag) => (
                 <span key={tag} className="rounded-md border-2 border-line px-2.5 py-1 text-xs text-muted">
