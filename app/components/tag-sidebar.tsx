@@ -2,6 +2,7 @@ import type { SignalPost } from "../lib/posts";
 
 type TagSidebarProps = {
   posts: SignalPost[];
+  variant?: "panel" | "sheet";
 };
 
 type TagSummary = {
@@ -23,11 +24,12 @@ function getTagSummaries(posts: SignalPost[]): TagSummary[] {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
-export function TagSidebar({ posts }: TagSidebarProps) {
+export function TagSidebar({ posts, variant = "panel" }: TagSidebarProps) {
   const tags = getTagSummaries(posts);
+  const isSheet = variant === "sheet";
 
   return (
-    <aside className="border-2 border-line bg-panel p-5 lg:sticky lg:top-6 lg:self-start">
+    <aside className={isSheet ? "" : "border-2 border-line bg-panel p-5 lg:sticky lg:top-6 lg:self-start"}>
       <div>
         <p className="text-sm font-medium text-accent">Topics</p>
         <h2 className="mt-2 text-2xl font-semibold">태그</h2>
