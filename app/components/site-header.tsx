@@ -28,7 +28,7 @@ export function SiteHeader({ posts }: SiteHeaderProps) {
           <span className="sr-only">게시글 검색</span>
           <input
             type="search"
-            placeholder="검색은 곧 추가됩니다"
+            placeholder=""
             className="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted outline-none"
           />
         </label>
