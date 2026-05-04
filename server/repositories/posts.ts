@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import type { SignalPost } from "@/app/lib/posts";
 import type { DraftTrendPost } from "../ai/types";
 import { createSlug } from "../utils/slug";
 
@@ -19,9 +20,31 @@ export type PublishedPost = {
   slug: string;
 };
 
+export type PublishedPostList = {
+  posts: SignalPost[];
+  total: number;
+};
+
 type SaveDraftPostInput = {
   draft: DraftTrendPost;
   rawItemId: string;
+};
+
+type PublishedPostRow = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  summary: string;
+  source_url: string;
+  category: string;
+  signal_score: number;
+  published_at: string | null;
+  created_at: string;
+  post_tags?: Array<{
+    tags?: {
+      name?: string | null;
+    } | null;
+  }>;
 };
 
 async function upsertTag(name: string) {
@@ -139,4 +162,118 @@ export async function publishPost(postId: string): Promise<PublishedPost> {
     id: data.id as string,
     slug: data.slug as string,
   };
+}
+
+function getSourceName(sourceUrl: string) {
+  try {
+    return new URL(sourceUrl).hostname.replace(/^www\./, "");
+  } catch {
+    return "원문";
+  }
+}
+
+function getReadingMinutes(post: Pick<PublishedPostRow, "excerpt" | "summary">) {
+  const characters = `${post.excerpt} ${post.summary}`.length;
+  return Math.max(3, Math.ceil(characters / 450));
+}
+
+function formatPublishedDate(post: Pick<PublishedPostRow, "published_at" | "created_at">) {
+  return (post.published_at ?? post.created_at).slice(0, 10);
+}
+
+function mapPublishedPost(post: PublishedPostRow): SignalPost {
+  return {
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    summary: post.summary,
+    source: getSourceName(post.source_url),
+    sourceUrl: post.source_url,
+    publishedAt: formatPublishedDate(post),
+    readingMinutes: getReadingMinutes(post),
+    category: post.category,
+    tags: (post.post_tags ?? [])
+      .map((postTag) => postTag.tags?.name)
+      .filter((tag): tag is string => Boolean(tag)),
+    signalScore: post.signal_score,
+    body: [post.summary],
+  };
+}
+
+function getPublishedPostSelect() {
+  return `
+    slug,
+    title,
+    excerpt,
+    summary,
+    source_url,
+    category,
+    signal_score,
+    published_at,
+    created_at,
+    post_tags (
+      tags (
+        name
+      )
+    )
+  `;
+}
+
+export async function listPublishedPosts({
+  limit,
+  offset = 0,
+}: {
+  limit: number;
+  offset?: number;
+}): Promise<PublishedPostList> {
+  const supabase = getSupabaseAdmin();
+  const { data, error, count } = await supabase
+    .from("posts")
+    .select(getPublishedPostSelect(), { count: "exact" })
+    .eq("status", "published")
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    posts: ((data ?? []) as unknown as PublishedPostRow[]).map(mapPublishedPost),
+    total: count ?? 0,
+  };
+}
+
+export async function listFeaturedPublishedPosts(limit: number): Promise<SignalPost[]> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("posts")
+    .select(getPublishedPostSelect())
+    .eq("status", "published")
+    .order("signal_score", { ascending: false })
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .limit(limit);
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data ?? []) as unknown as PublishedPostRow[]).map(mapPublishedPost);
+}
+
+export async function getPublishedPostBySlug(slug: string): Promise<SignalPost | null> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("posts")
+    .select(getPublishedPostSelect())
+    .eq("status", "published")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data ? mapPublishedPost(data as unknown as PublishedPostRow) : null;
 }

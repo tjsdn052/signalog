@@ -31,17 +31,25 @@ export function LatestPostCarousel({ posts }: LatestPostCarouselProps) {
           </Link>
         </div>
 
-        <CarouselContent className="-ml-4">
-          {latestPosts.map((post) => (
-            <CarouselItem key={post.slug} className="flex pl-4 sm:basis-1/2 lg:basis-1/3">
-              <PostCard post={post} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <div className="mt-4 flex items-center justify-end gap-3">
-          <CarouselPrevious className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
-          <CarouselNext className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
-        </div>
+        {latestPosts.length > 0 ? (
+          <>
+            <CarouselContent className="-ml-4">
+              {latestPosts.map((post) => (
+                <CarouselItem key={post.slug} className="flex pl-4 sm:basis-1/2 lg:basis-1/3">
+                  <PostCard post={post} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="mt-4 flex items-center justify-end gap-3">
+              <CarouselPrevious className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
+              <CarouselNext className="static size-8 translate-y-0 border-2 border-line bg-panel text-foreground hover:bg-foreground hover:text-background" />
+            </div>
+          </>
+        ) : (
+          <div className="border-2 border-line bg-panel p-5 text-muted">
+            아직 게시된 글이 없습니다.
+          </div>
+        )}
       </Carousel>
     </section>
   );
