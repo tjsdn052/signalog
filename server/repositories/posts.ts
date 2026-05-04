@@ -2,6 +2,18 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { DraftTrendPost } from "../ai/types";
 import { createSlug } from "../utils/slug";
 
+export type AdminPostListItem = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  signalScore: number;
+  status: string;
+  sourceUrl: string;
+  createdAt: string;
+};
+
 type SaveDraftPostInput = {
   draft: DraftTrendPost;
   rawItemId: string;
@@ -72,4 +84,29 @@ export async function saveDraftPost(input: SaveDraftPostInput) {
   }
 
   return postId;
+}
+
+export async function listAdminPosts(status = "draft"): Promise<AdminPostListItem[]> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("posts")
+    .select("id, slug, title, excerpt, category, signal_score, status, source_url, created_at")
+    .eq("status", status)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((post) => ({
+    id: post.id as string,
+    slug: post.slug as string,
+    title: post.title as string,
+    excerpt: post.excerpt as string,
+    category: post.category as string,
+    signalScore: post.signal_score as number,
+    status: post.status as string,
+    sourceUrl: post.source_url as string,
+    createdAt: post.created_at as string,
+  }));
 }
