@@ -4,6 +4,8 @@ import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { requireAdminUser } from "@/server/auth/admin";
 import { listAdminPosts } from "@/server/repositories/posts";
 import { LogoutButton } from "../components/logout-button";
+import { publishPostAction } from "./actions";
+import { PublishButton } from "./publish-button";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +60,7 @@ export default async function AdminPostsPage() {
                   <th className="px-4 py-3 font-medium">Score</th>
                   <th className="px-4 py-3 font-medium">Created</th>
                   <th className="px-4 py-3 font-medium">Source</th>
+                  <th className="px-4 py-3 font-medium">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -83,6 +86,12 @@ export default async function AdminPostsPage() {
                         원문
                         <ExternalLink size={14} aria-hidden="true" />
                       </Link>
+                    </td>
+                    <td className="px-4 py-4 align-top">
+                      <form action={publishPostAction}>
+                        <input type="hidden" name="postId" value={post.id} />
+                        <PublishButton />
+                      </form>
                     </td>
                   </tr>
                 ))}

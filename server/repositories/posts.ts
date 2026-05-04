@@ -14,6 +14,11 @@ export type AdminPostListItem = {
   createdAt: string;
 };
 
+export type PublishedPost = {
+  id: string;
+  slug: string;
+};
+
 type SaveDraftPostInput = {
   draft: DraftTrendPost;
   rawItemId: string;
@@ -109,4 +114,29 @@ export async function listAdminPosts(status = "draft"): Promise<AdminPostListIte
     sourceUrl: post.source_url as string,
     createdAt: post.created_at as string,
   }));
+}
+
+export async function publishPost(postId: string): Promise<PublishedPost> {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      status: "published",
+      published_at: now,
+      updated_at: now,
+    })
+    .eq("id", postId)
+    .eq("status", "draft")
+    .select("id, slug")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    id: data.id as string,
+    slug: data.slug as string,
+  };
 }
