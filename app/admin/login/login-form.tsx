@@ -41,7 +41,7 @@ export function LoginForm() {
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="mt-2 h-11 w-full border-2 border-line bg-panel px-3 text-foreground outline-none"
+          className="mt-2 h-11 w-full border-2 border-line bg-panel px-3 text-foreground outline-none focus:bg-foreground focus:text-background"
           required
         />
       </label>
@@ -51,7 +51,7 @@ export function LoginForm() {
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="mt-2 h-11 w-full border-2 border-line bg-panel px-3 text-foreground outline-none"
+          className="mt-2 h-11 w-full border-2 border-line bg-panel px-3 text-foreground outline-none focus:bg-foreground focus:text-background"
           required
         />
       </label>
@@ -60,7 +60,7 @@ export function LoginForm() {
 
       <button
         type="submit"
-        className="inline-flex h-11 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background disabled:opacity-50"
+        className="inline-flex h-11 w-full items-center justify-center rounded-md border-2 border-line bg-panel px-4 text-sm font-medium text-foreground hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50"
         disabled={isSubmitting}
       >
         {isSubmitting ? "로그인 중" : "로그인"}
