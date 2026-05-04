@@ -16,6 +16,10 @@ export type AdminPostListItem = {
   createdAt: string;
 };
 
+export type AdminPostDetail = AdminPostListItem & {
+  summary: string;
+};
+
 export type PublishedPost = {
   id: string;
   slug: string;
@@ -29,6 +33,15 @@ export type PublishedPostList = {
 type SaveDraftPostInput = {
   draft: DraftTrendPost;
   rawItemId: string;
+};
+
+type UpdateDraftPostInput = {
+  id: string;
+  title: string;
+  excerpt: string;
+  summary: string;
+  category: string;
+  signalScore: number;
 };
 
 type PublishedPostRow = {
@@ -138,6 +151,73 @@ export async function listAdminPosts(status = "draft"): Promise<AdminPostListIte
     sourceUrl: post.source_url as string,
     createdAt: post.created_at as string,
   }));
+}
+
+export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail | null> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("posts")
+    .select("id, slug, title, excerpt, summary, category, signal_score, status, source_url, created_at")
+    .eq("id", postId)
+    .eq("status", "draft")
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    id: data.id as string,
+    slug: data.slug as string,
+    title: data.title as string,
+    excerpt: data.excerpt as string,
+    summary: data.summary as string,
+    category: data.category as string,
+    signalScore: data.signal_score as number,
+    status: data.status as string,
+    sourceUrl: data.source_url as string,
+    createdAt: data.created_at as string,
+  };
+}
+
+export async function updateDraftPost(input: UpdateDraftPostInput): Promise<AdminPostDetail> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      slug: createSlug(input.title),
+      title: input.title,
+      excerpt: input.excerpt,
+      summary: input.summary,
+      category: input.category,
+      signal_score: input.signalScore,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", input.id)
+    .eq("status", "draft")
+    .select("id, slug, title, excerpt, summary, category, signal_score, status, source_url, created_at")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    id: data.id as string,
+    slug: data.slug as string,
+    title: data.title as string,
+    excerpt: data.excerpt as string,
+    summary: data.summary as string,
+    category: data.category as string,
+    signalScore: data.signal_score as number,
+    status: data.status as string,
+    sourceUrl: data.source_url as string,
+    createdAt: data.created_at as string,
+  };
 }
 
 export async function publishPost(postId: string): Promise<PublishedPost> {
