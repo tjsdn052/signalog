@@ -10,6 +10,7 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -22,16 +23,18 @@ export function LoginForm() {
       password,
     });
 
-    setIsSubmitting(false);
-
     if (signInError) {
+      setIsSubmitting(false);
       setError(signInError.message);
       return;
     }
 
+    setIsRedirecting(true);
     router.push("/admin/posts");
     router.refresh();
   }
+
+  const isPending = isSubmitting || isRedirecting;
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -61,9 +64,9 @@ export function LoginForm() {
       <button
         type="submit"
         className="inline-flex h-11 w-full items-center justify-center rounded-md border-2 border-line bg-panel px-4 text-sm font-medium text-foreground hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50"
-        disabled={isSubmitting}
+        disabled={isPending}
       >
-        {isSubmitting ? "로그인 중" : "로그인"}
+        {isRedirecting ? "이동 중" : isSubmitting ? "로그인 중" : "로그인"}
       </button>
     </form>
   );
