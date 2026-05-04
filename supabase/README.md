@@ -6,11 +6,13 @@ Signalog MVP uses Supabase for collected raw items, AI draft posts, tags, and ru
 
 ```txt
 NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 COLLECT_JOB_SECRET=
 ```
 
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Browser-safe anon key for Supabase Auth.
 - `SUPABASE_SERVICE_ROLE_KEY`: Server-only key used by collection jobs. Never expose this to client components.
 - `COLLECT_JOB_SECRET`: Optional bearer token for `/api/jobs/collect`.
 

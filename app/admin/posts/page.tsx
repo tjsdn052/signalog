@@ -1,7 +1,9 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
+import { requireAdminUser } from "@/server/auth/admin";
 import { listAdminPosts } from "@/server/repositories/posts";
+import { LogoutButton } from "../components/logout-button";
 
 export const dynamic = "force-dynamic";
 
@@ -11,18 +13,27 @@ export const metadata = {
 };
 
 export default async function AdminPostsPage() {
+  const user = await requireAdminUser();
   const isConfigured = isSupabaseAdminConfigured();
   const posts = isConfigured ? await listAdminPosts("draft") : [];
 
   return (
     <main className="min-h-screen">
       <section className="mx-auto max-w-6xl px-5 py-12">
-        <div className="mb-8 border-b-2 border-line pb-8">
-          <p className="text-sm font-medium text-accent">Admin</p>
-          <h1 className="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">Draft 게시글</h1>
-          <p className="mt-4 max-w-2xl leading-7 text-muted">
-            수집 파이프라인이 생성한 초안 글을 확인합니다.
-          </p>
+        <div className="mb-8 flex flex-col gap-4 border-b-2 border-line pb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-accent">Admin</p>
+            <h1 className="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">Draft 게시글</h1>
+            <p className="mt-4 max-w-2xl leading-7 text-muted">
+              수집 파이프라인이 생성한 초안 글을 확인합니다.
+            </p>
+          </div>
+          {user ? (
+            <div className="flex flex-col gap-3 sm:items-end">
+              <span className="text-sm text-muted">{user.email}</span>
+              <LogoutButton />
+            </div>
+          ) : null}
         </div>
 
         {!isConfigured ? (

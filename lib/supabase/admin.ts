@@ -1,10 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseUrl } from "./config";
 
 let adminClient: SupabaseClient | null = null;
-
-function getSupabaseUrl() {
-  return process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-}
 
 export function isSupabaseAdminConfigured() {
   return Boolean(getSupabaseUrl() && process.env.SUPABASE_SERVICE_ROLE_KEY);
