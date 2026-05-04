@@ -67,7 +67,9 @@ export default async function AdminPostsPage() {
                 {posts.map((post) => (
                   <tr key={post.id} className="border-b-2 border-line last:border-b-0">
                     <td className="px-4 py-4 align-top">
-                      <div className="font-medium">{post.title}</div>
+                      <Link href={`/admin/posts/${post.id}`} className="font-medium hover:underline">
+                        {post.title}
+                      </Link>
                       <div className="mt-2 line-clamp-2 text-sm leading-6 text-muted">{post.excerpt}</div>
                       <div className="mt-2 font-mono text-xs text-muted">{post.slug}</div>
                     </td>
