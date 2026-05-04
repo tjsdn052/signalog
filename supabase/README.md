@@ -25,6 +25,7 @@ If the project was created with "Automatically expose new tables and functions" 
 The initial schema includes:
 
 - `sources`
+- `profiles`
 - `collection_runs`
 - `raw_items`
 - `posts`
@@ -33,3 +34,16 @@ The initial schema includes:
 - `ai_runs`
 
 Rows are written with the service role key from the server job. Public reads are limited to `published` posts and related tags.
+
+## Admin Role
+
+Admin pages require a logged-in Supabase Auth user with `public.profiles.role = 'admin'`.
+
+If the base schema was already applied before `profiles` existed, run `supabase/admin-role-profiles.sql` in the Supabase SQL editor. Then update your admin account:
+
+```sql
+update public.profiles
+set role = 'admin',
+    updated_at = now()
+where email = 'your-admin@email.com';
+```

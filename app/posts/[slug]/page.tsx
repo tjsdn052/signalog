@@ -7,7 +7,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getPostBySlug, posts } from "../../lib/posts";
+import { isSupabasePublicConfigured } from "@/lib/supabase/config";
+import { getPublishedPostBySlug } from "@/server/repositories/posts";
+import { getPostBySlug } from "../../lib/posts";
 
 type PostPageProps = {
   params: Promise<{
@@ -15,17 +17,12 @@ type PostPageProps = {
   }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
-}
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = isSupabasePublicConfigured() ? await getPublishedPostBySlug(slug) : getPostBySlug(slug);
 
   if (!post) {
     return {
@@ -41,7 +38,7 @@ export async function generateMetadata({ params }: PostPageProps) {
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = isSupabasePublicConfigured() ? await getPublishedPostBySlug(slug) : getPostBySlug(slug);
 
   if (!post) {
     notFound();

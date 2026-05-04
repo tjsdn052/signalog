@@ -6,6 +6,14 @@ create type public.post_status as enum ('draft', 'published', 'archived');
 create type public.ai_task_type as enum ('summarize', 'translate', 'classify', 'prepare-draft');
 create type public.run_status as enum ('running', 'completed', 'failed');
 
+create table public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text not null,
+  role text not null default 'user' check (role in ('user', 'admin')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table public.sources (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -85,6 +93,28 @@ create table public.ai_runs (
   created_at timestamptz not null default now()
 );
 
+create or replace function public.handle_new_user_profile()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email)
+  values (new.id, coalesce(new.email, ''))
+  on conflict (id) do update
+    set email = excluded.email,
+        updated_at = now();
+
+  return new;
+end;
+$$;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user_profile();
+
+alter table public.profiles enable row level security;
 alter table public.sources enable row level security;
 alter table public.collection_runs enable row level security;
 alter table public.raw_items enable row level security;
@@ -92,6 +122,10 @@ alter table public.posts enable row level security;
 alter table public.tags enable row level security;
 alter table public.post_tags enable row level security;
 alter table public.ai_runs enable row level security;
+
+create policy "Users can read their own profile" on public.profiles
+  for select
+  using (id = auth.uid());
 
 create policy "Published posts are readable" on public.posts
   for select
@@ -118,6 +152,7 @@ grant all on all tables in schema public to service_role;
 grant all on all sequences in schema public to service_role;
 grant all on all functions in schema public to service_role;
 
+grant select on public.profiles to authenticated;
 grant select on public.posts to anon, authenticated;
 grant select on public.tags to anon, authenticated;
 grant select on public.post_tags to anon, authenticated;
