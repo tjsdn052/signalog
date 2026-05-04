@@ -2,6 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { getSupabasePublic } from "@/lib/supabase/public";
 import type { SignalPost } from "@/app/lib/posts";
 import type { DraftTrendPost } from "../ai/types";
+import type { PostCategory } from "../posts/categories";
 import { createSlug } from "../utils/slug";
 
 export type AdminPostListItem = {
@@ -40,7 +41,7 @@ type UpdateDraftPostInput = {
   title: string;
   excerpt: string;
   summary: string;
-  category: string;
+  category: PostCategory;
   signalScore: number;
 };
 

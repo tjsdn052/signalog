@@ -2,6 +2,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdminUser } from "@/server/auth/admin";
+import { POST_CATEGORIES } from "@/server/posts/categories";
 import { getAdminDraftPost } from "@/server/repositories/posts";
 import { updateDraftPostAction } from "./actions";
 import { SaveButton } from "./save-button";
@@ -77,12 +78,18 @@ export default async function AdminPostEditPage({ params }: AdminPostEditPagePro
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">
               <span className="text-sm font-medium text-muted">Category</span>
-              <input
+              <select
                 name="category"
                 defaultValue={post.category}
                 className="mt-2 h-11 w-full border-2 border-line bg-panel px-3 text-foreground outline-none focus:bg-foreground focus:text-background"
                 required
-              />
+              >
+                {POST_CATEGORIES.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <label className="block">
