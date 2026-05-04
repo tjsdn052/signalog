@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { isSupabaseAuthConfigured } from "@/lib/supabase/config";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getAdminAccess } from "@/server/auth/admin";
 import { LoginForm } from "./login-form";
 
 export const dynamic = "force-dynamic";
@@ -11,15 +11,17 @@ export const metadata = {
 
 export default async function AdminLoginPage() {
   const isConfigured = isSupabaseAuthConfigured();
+  let forbiddenEmail: string | null = null;
 
   if (isConfigured) {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const access = await getAdminAccess();
 
-    if (user) {
+    if (access.status === "allowed") {
       redirect("/admin/posts");
+    }
+
+    if (access.status === "forbidden") {
+      forbiddenEmail = access.user?.email ?? null;
     }
   }
 
@@ -34,7 +36,14 @@ export default async function AdminLoginPage() {
           </p>
 
           {isConfigured ? (
-            <LoginForm />
+            <>
+              {forbiddenEmail ? (
+                <div className="mt-6 border-2 border-line p-4 text-sm leading-6 text-muted">
+                  `{forbiddenEmail}` 계정은 관리자 권한이 없습니다. Supabase `profiles.role`을 `admin`으로 변경하세요.
+                </div>
+              ) : null}
+              <LoginForm />
+            </>
           ) : (
             <div className="mt-8 border-2 border-line p-4 text-sm leading-6 text-muted">
               Supabase Auth 환경변수가 필요합니다. `NEXT_PUBLIC_SUPABASE_ANON_KEY`를 추가하세요.
