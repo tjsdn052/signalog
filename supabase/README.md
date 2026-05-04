@@ -18,6 +18,8 @@ COLLECT_JOB_SECRET=
 
 Run `supabase/schema.sql` in the Supabase SQL editor.
 
+If the project was created with "Automatically expose new tables and functions" disabled, run `supabase/grants.sql` after the schema. This grants the server `service_role` permission to write collection data while keeping public reads limited by RLS policies.
+
 The initial schema includes:
 
 - `sources`

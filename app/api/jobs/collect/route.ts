@@ -19,7 +19,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const result = await collectTrends();
+  try {
+    const result = await collectTrends();
 
-  return NextResponse.json(result);
+    return NextResponse.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : JSON.stringify(error);
+
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
