@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { PostCard } from "../components/post-card";
-import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
+import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { listPublishedPosts } from "@/server/repositories/posts";
 import { posts } from "../lib/posts";
 
@@ -33,7 +33,8 @@ export const dynamic = "force-dynamic";
 export default async function PostsPage({ searchParams }: PostsPageProps) {
   const { page } = await searchParams;
   const requestedPage = getCurrentPage(page);
-  const publishedPostList = isSupabaseAdminConfigured()
+  const hasSupabasePublic = isSupabasePublicConfigured();
+  const publishedPostList = hasSupabasePublic
     ? await listPublishedPosts({
         limit: POSTS_PER_PAGE,
         offset: (requestedPage - 1) * POSTS_PER_PAGE,
@@ -48,7 +49,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
   const paginatedPosts =
     currentPage === requestedPage
       ? publishedPostList.posts
-      : isSupabaseAdminConfigured()
+      : hasSupabasePublic
         ? (await listPublishedPosts({ limit: POSTS_PER_PAGE, offset: startIndex })).posts
         : posts.slice(startIndex, startIndex + POSTS_PER_PAGE);
   const hasPreviousPage = currentPage > 1;

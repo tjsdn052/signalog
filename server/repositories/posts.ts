@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabasePublic } from "@/lib/supabase/public";
 import type { SignalPost } from "@/app/lib/posts";
 import type { DraftTrendPost } from "../ai/types";
 import { createSlug } from "../utils/slug";
@@ -226,7 +227,7 @@ export async function listPublishedPosts({
   limit: number;
   offset?: number;
 }): Promise<PublishedPostList> {
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabasePublic();
   const { data, error, count } = await supabase
     .from("posts")
     .select(getPublishedPostSelect(), { count: "exact" })
@@ -246,7 +247,7 @@ export async function listPublishedPosts({
 }
 
 export async function listFeaturedPublishedPosts(limit: number): Promise<SignalPost[]> {
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabasePublic();
   const { data, error } = await supabase
     .from("posts")
     .select(getPublishedPostSelect())
@@ -263,7 +264,7 @@ export async function listFeaturedPublishedPosts(limit: number): Promise<SignalP
 }
 
 export async function getPublishedPostBySlug(slug: string): Promise<SignalPost | null> {
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabasePublic();
   const { data, error } = await supabase
     .from("posts")
     .select(getPublishedPostSelect())

@@ -9,3 +9,7 @@ export function getSupabaseAnonKey() {
 export function isSupabaseAuthConfigured() {
   return Boolean(getSupabaseUrl() && getSupabaseAnonKey());
 }
+
+export function isSupabasePublicConfigured() {
+  return Boolean(getSupabaseUrl() && getSupabaseAnonKey());
+}
