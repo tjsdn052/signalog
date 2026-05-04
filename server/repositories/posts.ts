@@ -3,6 +3,7 @@ import { getSupabasePublic } from "@/lib/supabase/public";
 import type { SignalPost } from "@/app/lib/posts";
 import type { DraftTrendPost } from "../ai/types";
 import type { PostCategory } from "../posts/categories";
+import type { PostTag } from "../posts/tags";
 import { createSlug } from "../utils/slug";
 
 export type AdminPostListItem = {
@@ -19,6 +20,7 @@ export type AdminPostListItem = {
 
 export type AdminPostDetail = AdminPostListItem & {
   summary: string;
+  tags: string[];
 };
 
 export type PublishedPost = {
@@ -43,6 +45,25 @@ type UpdateDraftPostInput = {
   summary: string;
   category: PostCategory;
   signalScore: number;
+  tags: PostTag[];
+};
+
+type AdminPostDetailRow = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  summary: string;
+  category: string;
+  signal_score: number;
+  status: string;
+  source_url: string;
+  created_at: string;
+  post_tags?: Array<{
+    tags?: {
+      name?: string | null;
+    } | null;
+  }>;
 };
 
 type PublishedPostRow = {
@@ -158,7 +179,25 @@ export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("posts")
-    .select("id, slug, title, excerpt, summary, category, signal_score, status, source_url, created_at")
+    .select(
+      `
+        id,
+        slug,
+        title,
+        excerpt,
+        summary,
+        category,
+        signal_score,
+        status,
+        source_url,
+        created_at,
+        post_tags (
+          tags (
+            name
+          )
+        )
+      `,
+    )
     .eq("id", postId)
     .eq("status", "draft")
     .maybeSingle();
@@ -171,17 +210,22 @@ export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail
     return null;
   }
 
+  const post = data as unknown as AdminPostDetailRow;
+
   return {
-    id: data.id as string,
-    slug: data.slug as string,
-    title: data.title as string,
-    excerpt: data.excerpt as string,
-    summary: data.summary as string,
-    category: data.category as string,
-    signalScore: data.signal_score as number,
-    status: data.status as string,
-    sourceUrl: data.source_url as string,
-    createdAt: data.created_at as string,
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    summary: post.summary,
+    category: post.category,
+    signalScore: post.signal_score,
+    status: post.status,
+    sourceUrl: post.source_url,
+    createdAt: post.created_at,
+    tags: (post.post_tags ?? [])
+      .map((postTag) => postTag.tags?.name)
+      .filter((tag): tag is string => Boolean(tag)),
   };
 }
 
@@ -207,6 +251,23 @@ export async function updateDraftPost(input: UpdateDraftPostInput): Promise<Admi
     throw error;
   }
 
+  const { error: deleteTagError } = await supabase.from("post_tags").delete().eq("post_id", input.id);
+
+  if (deleteTagError) {
+    throw deleteTagError;
+  }
+
+  if (input.tags.length > 0) {
+    const tagIds = await Promise.all(input.tags.map((tag) => upsertTag(tag)));
+    const { error: tagError } = await supabase
+      .from("post_tags")
+      .upsert(tagIds.map((tagId) => ({ post_id: input.id, tag_id: tagId })));
+
+    if (tagError) {
+      throw tagError;
+    }
+  }
+
   return {
     id: data.id as string,
     slug: data.slug as string,
@@ -218,6 +279,7 @@ export async function updateDraftPost(input: UpdateDraftPostInput): Promise<Admi
     status: data.status as string,
     sourceUrl: data.source_url as string,
     createdAt: data.created_at as string,
+    tags: input.tags,
   };
 }
 

@@ -1,5 +1,6 @@
 import type { RawTrendItem } from "../collectors/types";
 import { normalizePostCategory } from "../posts/categories";
+import { normalizePostTags } from "../posts/tags";
 
 export function classifyTrendItem(item: RawTrendItem) {
   const text = `${item.title} ${item.excerpt ?? ""}`.toLowerCase();
@@ -7,19 +8,19 @@ export function classifyTrendItem(item: RawTrendItem) {
   if (text.includes("agent")) {
     return {
       category: normalizePostCategory("Agentic AI"),
-      tags: ["Agents", "Workflow", "LLM"],
+      tags: normalizePostTags(["Agents", "Workflow", "LLM"]),
     };
   }
 
   if (text.includes("local")) {
     return {
       category: normalizePostCategory("Models"),
-      tags: ["Local AI", "Inference", "Open Source"],
+      tags: normalizePostTags(["Local AI", "Inference", "Open Source"]),
     };
   }
 
   return {
     category: normalizePostCategory("Infrastructure"),
-    tags: ["AI", "Tools", "Product"],
+    tags: normalizePostTags(["Tools", "Product"]),
   };
 }

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdminUser } from "@/server/auth/admin";
 import { isPostCategory } from "@/server/posts/categories";
+import { isPostTag } from "@/server/posts/tags";
 import { updateDraftPost } from "@/server/repositories/posts";
 
 function getRequiredString(formData: FormData, key: string) {
@@ -33,6 +34,7 @@ export async function updateDraftPostAction(formData: FormData) {
     summary: getRequiredString(formData, "summary"),
     category: getCategory(formData),
     signalScore,
+    tags: getTags(formData),
   });
 
   revalidatePath("/admin/posts");
@@ -48,4 +50,16 @@ function getCategory(formData: FormData) {
   }
 
   return category;
+}
+
+function getTags(formData: FormData) {
+  const tags = formData.getAll("tags");
+
+  return tags.map((tag) => {
+    if (typeof tag !== "string" || !isPostTag(tag)) {
+      throw new Error("허용되지 않은 tag입니다.");
+    }
+
+    return tag;
+  });
 }
