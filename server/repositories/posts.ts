@@ -3,7 +3,6 @@ import { getSupabasePublic } from "@/lib/supabase/public";
 import type { SignalPost } from "@/app/lib/posts";
 import type { DraftTrendPost } from "../ai/types";
 import type { PostCategory } from "../posts/categories";
-import type { PostTag } from "../posts/tags";
 import { createSlug } from "../utils/slug";
 
 export type AdminPostListItem = {
@@ -45,7 +44,7 @@ type UpdateDraftPostInput = {
   summary: string;
   category: PostCategory;
   signalScore: number;
-  tags: PostTag[];
+  tags: string[];
 };
 
 type AdminPostDetailRow = {
@@ -173,6 +172,17 @@ export async function listAdminPosts(status = "draft"): Promise<AdminPostListIte
     sourceUrl: post.source_url as string,
     createdAt: post.created_at as string,
   }));
+}
+
+export async function listAdminTagNames(): Promise<string[]> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase.from("tags").select("name").order("name", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((tag) => tag.name as string);
 }
 
 export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail | null> {

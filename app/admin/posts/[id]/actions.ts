@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdminUser } from "@/server/auth/admin";
 import { isPostCategory } from "@/server/posts/categories";
-import { isPostTag } from "@/server/posts/tags";
+import { isValidTagName, normalizeTagName } from "@/server/posts/tags";
 import { updateDraftPost } from "@/server/repositories/posts";
 
 function getRequiredString(formData: FormData, key: string) {
@@ -54,12 +54,25 @@ function getCategory(formData: FormData) {
 
 function getTags(formData: FormData) {
   const tags = formData.getAll("tags");
+  const uniqueTags = new Set<string>();
 
-  return tags.map((tag) => {
-    if (typeof tag !== "string" || !isPostTag(tag)) {
+  for (const tag of tags) {
+    if (typeof tag !== "string") {
       throw new Error("허용되지 않은 tag입니다.");
     }
 
-    return tag;
-  });
+    const normalizedTag = normalizeTagName(tag);
+
+    if (!isValidTagName(normalizedTag)) {
+      throw new Error("태그는 2자 이상 32자 이하로 입력해야 합니다.");
+    }
+
+    uniqueTags.add(normalizedTag);
+  }
+
+  if (uniqueTags.size > 10) {
+    throw new Error("태그는 최대 10개까지 선택할 수 있습니다.");
+  }
+
+  return Array.from(uniqueTags);
 }

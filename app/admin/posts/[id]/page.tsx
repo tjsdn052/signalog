@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { requireAdminUser } from "@/server/auth/admin";
 import { POST_CATEGORIES } from "@/server/posts/categories";
 import { POST_TAGS } from "@/server/posts/tags";
-import { getAdminDraftPost } from "@/server/repositories/posts";
+import { getAdminDraftPost, listAdminTagNames } from "@/server/repositories/posts";
 import { updateDraftPostAction } from "./actions";
 import { SaveButton } from "./save-button";
+import { TagSelector } from "./tag-selector";
 
 type AdminPostEditPageProps = {
   params: Promise<{
@@ -24,7 +25,7 @@ export default async function AdminPostEditPage({ params }: AdminPostEditPagePro
   await requireAdminUser();
 
   const { id } = await params;
-  const post = await getAdminDraftPost(id);
+  const [post, tagNames] = await Promise.all([getAdminDraftPost(id), listAdminTagNames()]);
 
   if (!post) {
     notFound();
@@ -107,26 +108,7 @@ export default async function AdminPostEditPage({ params }: AdminPostEditPagePro
             </label>
           </div>
 
-          <fieldset className="border-2 border-line p-4">
-            <legend className="px-1 text-sm font-medium text-muted">Tags</legend>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {POST_TAGS.map((tag) => (
-                <label
-                  key={tag}
-                  className="flex min-h-10 items-center gap-2 border-2 border-line bg-panel px-3 text-sm text-muted"
-                >
-                  <input
-                    type="checkbox"
-                    name="tags"
-                    value={tag}
-                    defaultChecked={post.tags.includes(tag)}
-                    className="size-4 accent-current"
-                  />
-                  <span>{tag}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <TagSelector availableTags={Array.from(new Set([...POST_TAGS, ...tagNames]))} selectedTags={post.tags} />
 
           <div className="flex flex-col gap-3 border-t-2 border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
             <Link

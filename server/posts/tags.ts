@@ -30,3 +30,13 @@ export function isPostTag(tag: string): tag is PostTag {
 export function normalizePostTags(tags: string[]): PostTag[] {
   return tags.filter(isPostTag);
 }
+
+export function normalizeTagName(tag: string) {
+  return tag.trim().replace(/\s+/g, " ");
+}
+
+export function isValidTagName(tag: string) {
+  const normalizedTag = normalizeTagName(tag);
+
+  return normalizedTag.length >= 2 && normalizedTag.length <= 32;
+}
