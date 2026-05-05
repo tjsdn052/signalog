@@ -9,7 +9,7 @@ import { getCategory, getContentMarkdown, getOptionalUrl, getRequiredString, get
 export async function createManualPostAction(formData: FormData) {
   await requireAdminUser();
 
-  const post = await createManualDraftPost({
+  await createManualDraftPost({
     title: getRequiredString(formData, "title"),
     excerpt: getRequiredString(formData, "excerpt"),
     summary: getRequiredString(formData, "summary"),
@@ -21,5 +21,6 @@ export async function createManualPostAction(formData: FormData) {
   });
 
   revalidatePath("/admin/posts");
-  redirect(`/admin/posts/${post.id}`);
+  revalidatePath("/admin/posts/new");
+  redirect("/admin/posts");
 }
