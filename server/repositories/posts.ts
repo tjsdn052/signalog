@@ -480,6 +480,58 @@ export async function listPublishedPosts({
   };
 }
 
+function normalizeSearchQuery(query: string) {
+  return query.trim().replace(/\s+/g, " ").slice(0, 80);
+}
+
+function toIlikePattern(query: string) {
+  return `%${query.replace(/[%_,()]/g, " ")}%`;
+}
+
+export async function searchPublishedPosts({
+  query,
+  limit,
+  offset = 0,
+}: {
+  query: string;
+  limit: number;
+  offset?: number;
+}): Promise<PublishedPostList> {
+  const normalizedQuery = normalizeSearchQuery(query);
+
+  if (!normalizedQuery) {
+    return { posts: [], total: 0 };
+  }
+
+  const searchPattern = toIlikePattern(normalizedQuery);
+  const supabase = getSupabasePublic();
+  const { data, error, count } = await supabase
+    .from("posts")
+    .select(getPublishedPostSelect(), { count: "exact" })
+    .eq("status", "published")
+    .or(
+      [
+        `title.ilike.${searchPattern}`,
+        `excerpt.ilike.${searchPattern}`,
+        `summary.ilike.${searchPattern}`,
+        `content_markdown.ilike.${searchPattern}`,
+        `category.ilike.${searchPattern}`,
+      ].join(","),
+    )
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    posts: ((data ?? []) as unknown as PublishedPostRow[]).map(mapPublishedPost),
+    total: count ?? 0,
+  };
+}
+
 export async function listFeaturedPublishedPosts(limit: number): Promise<SignalPost[]> {
   const supabase = getSupabasePublic();
   const { data, error } = await supabase
