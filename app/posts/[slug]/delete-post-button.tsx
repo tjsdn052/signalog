@@ -13,7 +13,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function DeletePostButton() {
+type DeletePostButtonProps = {
+  formId: string;
+};
+
+export function DeletePostButton({ formId }: DeletePostButtonProps) {
   const { pending } = useFormStatus();
 
   return (
@@ -39,6 +43,7 @@ export function DeletePostButton() {
           <AlertDialogAction asChild>
             <button
               type="submit"
+              form={formId}
               disabled={pending}
               className="inline-flex h-8 items-center justify-center rounded-lg bg-destructive/10 px-2.5 text-sm font-medium text-destructive hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-50"
             >

@@ -56,6 +56,7 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const canManagePost = adminAccess.status === "allowed" && Boolean(post.id);
+  const deleteFormId = `delete-post-${post.id ?? "unknown"}`;
 
   return (
     <main className="min-h-screen">
@@ -93,10 +94,10 @@ export default async function PostPage({ params }: PostPageProps) {
             >
               수정
             </Link>
-            <form action={deletePostAction}>
+            <form id={deleteFormId} action={deletePostAction}>
               <input type="hidden" name="postId" value={post.id} />
               <input type="hidden" name="slug" value={post.slug} />
-              <DeletePostButton />
+              <DeletePostButton formId={deleteFormId} />
             </form>
           </div>
         ) : null}
