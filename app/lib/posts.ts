@@ -3,6 +3,7 @@ export type SignalPost = {
   title: string;
   excerpt: string;
   summary: string;
+  contentMarkdown?: string | null;
   source: string;
   sourceUrl: string;
   publishedAt: string;

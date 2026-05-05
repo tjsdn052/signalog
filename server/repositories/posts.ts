@@ -19,6 +19,7 @@ export type AdminPostListItem = {
 
 export type AdminPostDetail = AdminPostListItem & {
   summary: string;
+  contentMarkdown: string;
   tags: string[];
 };
 
@@ -42,6 +43,7 @@ type UpdateDraftPostInput = {
   title: string;
   excerpt: string;
   summary: string;
+  contentMarkdown: string;
   category: PostCategory;
   signalScore: number;
   tags: string[];
@@ -51,6 +53,7 @@ type CreateManualDraftPostInput = {
   title: string;
   excerpt: string;
   summary: string;
+  contentMarkdown: string;
   sourceUrl: string;
   category: PostCategory;
   signalScore: number;
@@ -63,6 +66,7 @@ type AdminPostDetailRow = {
   title: string;
   excerpt: string;
   summary: string;
+  content_markdown: string | null;
   category: string;
   signal_score: number;
   status: string;
@@ -80,6 +84,7 @@ type PublishedPostRow = {
   title: string;
   excerpt: string;
   summary: string;
+  content_markdown: string | null;
   source_url: string;
   category: string;
   signal_score: number;
@@ -127,6 +132,7 @@ export async function saveDraftPost(input: SaveDraftPostInput) {
         title: input.draft.title,
         excerpt: input.draft.excerpt,
         summary: input.draft.summary,
+        content_markdown: input.draft.summary,
         source_url: input.draft.sourceItem.url,
         category: input.draft.category,
         signal_score: input.draft.signalScore,
@@ -204,6 +210,7 @@ export async function createManualDraftPost(input: CreateManualDraftPostInput): 
       title: input.title,
       excerpt: input.excerpt,
       summary: input.summary,
+      content_markdown: input.contentMarkdown,
       source_url: input.sourceUrl,
       category: input.category,
       signal_score: input.signalScore,
@@ -233,6 +240,7 @@ export async function createManualDraftPost(input: CreateManualDraftPostInput): 
     title: data.title as string,
     excerpt: data.excerpt as string,
     summary: data.summary as string,
+    contentMarkdown: input.contentMarkdown,
     category: data.category as string,
     signalScore: data.signal_score as number,
     status: data.status as string,
@@ -253,6 +261,7 @@ export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail
         title,
         excerpt,
         summary,
+        content_markdown,
         category,
         signal_score,
         status,
@@ -285,6 +294,7 @@ export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail
     title: post.title,
     excerpt: post.excerpt,
     summary: post.summary,
+    contentMarkdown: post.content_markdown ?? post.summary,
     category: post.category,
     signalScore: post.signal_score,
     status: post.status,
@@ -305,13 +315,14 @@ export async function updateDraftPost(input: UpdateDraftPostInput): Promise<Admi
       title: input.title,
       excerpt: input.excerpt,
       summary: input.summary,
+      content_markdown: input.contentMarkdown,
       category: input.category,
       signal_score: input.signalScore,
       updated_at: new Date().toISOString(),
     })
     .eq("id", input.id)
     .eq("status", "draft")
-    .select("id, slug, title, excerpt, summary, category, signal_score, status, source_url, created_at")
+    .select("id, slug, title, excerpt, summary, content_markdown, category, signal_score, status, source_url, created_at")
     .single();
 
   if (error) {
@@ -341,6 +352,7 @@ export async function updateDraftPost(input: UpdateDraftPostInput): Promise<Admi
     title: data.title as string,
     excerpt: data.excerpt as string,
     summary: data.summary as string,
+    contentMarkdown: (data.content_markdown as string | null) ?? (data.summary as string),
     category: data.category as string,
     signalScore: data.signal_score as number,
     status: data.status as string,
@@ -383,8 +395,8 @@ function getSourceName(sourceUrl: string) {
   }
 }
 
-function getReadingMinutes(post: Pick<PublishedPostRow, "excerpt" | "summary">) {
-  const characters = `${post.excerpt} ${post.summary}`.length;
+function getReadingMinutes(post: Pick<PublishedPostRow, "excerpt" | "summary" | "content_markdown">) {
+  const characters = `${post.excerpt} ${post.content_markdown ?? post.summary}`.length;
   return Math.max(3, Math.ceil(characters / 450));
 }
 
@@ -398,6 +410,7 @@ function mapPublishedPost(post: PublishedPostRow): SignalPost {
     title: post.title,
     excerpt: post.excerpt,
     summary: post.summary,
+    contentMarkdown: post.content_markdown ?? post.summary,
     source: getSourceName(post.source_url),
     sourceUrl: post.source_url,
     publishedAt: formatPublishedDate(post),
@@ -407,7 +420,7 @@ function mapPublishedPost(post: PublishedPostRow): SignalPost {
       .map((postTag) => postTag.tags?.name)
       .filter((tag): tag is string => Boolean(tag)),
     signalScore: post.signal_score,
-    body: [post.summary],
+    body: [post.content_markdown ?? post.summary],
   };
 }
 
@@ -417,6 +430,7 @@ function getPublishedPostSelect() {
     title,
     excerpt,
     summary,
+    content_markdown,
     source_url,
     category,
     signal_score,

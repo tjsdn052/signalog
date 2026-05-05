@@ -37,6 +37,10 @@ export function getSignalScore(formData: FormData) {
   return signalScore;
 }
 
+export function getContentMarkdown(formData: FormData) {
+  return getRequiredString(formData, "contentMarkdown");
+}
+
 export function getCategory(formData: FormData) {
   const category = getRequiredString(formData, "category");
 

@@ -5,6 +5,7 @@ import { requireAdminUser } from "@/server/auth/admin";
 import { POST_CATEGORIES } from "@/server/posts/categories";
 import { POST_TAGS } from "@/server/posts/tags";
 import { getAdminDraftPost, listAdminTagNames } from "@/server/repositories/posts";
+import { MarkdownEditorField } from "../markdown-editor-field";
 import { updateDraftPostAction } from "./actions";
 import { SaveButton } from "./save-button";
 import { TagSelector } from "./tag-selector";
@@ -76,6 +77,11 @@ export default async function AdminPostEditPage({ params }: AdminPostEditPagePro
               required
             />
           </label>
+
+          <div className="block">
+            <span className="text-sm font-medium text-muted">Content Markdown</span>
+            <MarkdownEditorField name="contentMarkdown" initialMarkdown={post.contentMarkdown} />
+          </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">

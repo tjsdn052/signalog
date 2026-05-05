@@ -7,6 +7,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { notFound } from "next/navigation";
+import { MarkdownBody } from "@/app/components/markdown-body";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { getPublishedPostBySlug } from "@/server/repositories/posts";
 import { getPostBySlug } from "../../lib/posts";
@@ -97,13 +98,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </p>
         </div>
 
-        <div className="prose prose-neutral mt-10 max-w-none dark:prose-invert">
-          {post.body.map((paragraph) => (
-            <p key={paragraph} className="mb-5 text-lg leading-9 text-foreground">
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        <MarkdownBody markdown={post.contentMarkdown ?? post.body.join("\n\n")} />
       </article>
     </main>
   );

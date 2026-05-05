@@ -128,3 +128,36 @@ a {
     @apply font-sans;
   }
 }
+
+.signalog-mdx-editor {
+  --basePageBg: var(--panel);
+  --baseBg: var(--panel);
+  --baseText: var(--foreground);
+  --baseBorder: var(--line);
+  --accentBg: var(--foreground);
+  --accentText: var(--background);
+  min-height: 22rem;
+}
+
+.signalog-mdx-editor [role="toolbar"] {
+  border-bottom: 2px solid var(--line);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.signalog-mdx-editor [role="toolbar"] button,
+.signalog-mdx-editor [role="toolbar"] [role="button"] {
+  color: var(--foreground);
+}
+
+.signalog-mdx-content {
+  min-height: 18rem;
+  padding: 1rem;
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.signalog-mdx-content:focus {
+  outline: none;
+}
