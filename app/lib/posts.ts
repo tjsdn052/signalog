@@ -1,8 +1,10 @@
 export type SignalPost = {
+  id?: string;
   slug: string;
   title: string;
   excerpt: string;
   summary: string;
+  contentMarkdown?: string | null;
   source: string;
   sourceUrl: string;
   publishedAt: string;

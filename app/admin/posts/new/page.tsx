@@ -6,6 +6,7 @@ import { POST_TAGS } from "@/server/posts/tags";
 import { listAdminTagNames } from "@/server/repositories/posts";
 import { SaveButton } from "../[id]/save-button";
 import { TagSelector } from "../[id]/tag-selector";
+import { MarkdownEditorField } from "../markdown-editor-field";
 import { createManualPostAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -54,13 +55,18 @@ export default async function AdminNewPostPage() {
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-muted">Body / Summary</span>
+            <span className="text-sm font-medium text-muted">Summary</span>
             <textarea
               name="summary"
-              className="mt-2 min-h-56 w-full resize-y border-2 border-line bg-panel p-3 leading-7 text-foreground outline-none focus:bg-foreground focus:text-background"
+              className="mt-2 min-h-32 w-full resize-y border-2 border-line bg-panel p-3 leading-7 text-foreground outline-none focus:bg-foreground focus:text-background"
               required
             />
           </label>
+
+          <div className="block">
+            <span className="text-sm font-medium text-muted">Content Markdown</span>
+            <MarkdownEditorField name="contentMarkdown" />
+          </div>
 
           <label className="block">
             <span className="text-sm font-medium text-muted">Source URL</span>

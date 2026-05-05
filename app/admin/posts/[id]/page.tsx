@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { requireAdminUser } from "@/server/auth/admin";
 import { POST_CATEGORIES } from "@/server/posts/categories";
 import { POST_TAGS } from "@/server/posts/tags";
-import { getAdminDraftPost, listAdminTagNames } from "@/server/repositories/posts";
+import { getAdminPost, listAdminTagNames } from "@/server/repositories/posts";
+import { MarkdownEditorField } from "../markdown-editor-field";
 import { updateDraftPostAction } from "./actions";
 import { SaveButton } from "./save-button";
 import { TagSelector } from "./tag-selector";
@@ -25,7 +26,7 @@ export default async function AdminPostEditPage({ params }: AdminPostEditPagePro
   await requireAdminUser();
 
   const { id } = await params;
-  const [post, tagNames] = await Promise.all([getAdminDraftPost(id), listAdminTagNames()]);
+  const [post, tagNames] = await Promise.all([getAdminPost(id), listAdminTagNames()]);
 
   if (!post) {
     notFound();
@@ -37,10 +38,10 @@ export default async function AdminPostEditPage({ params }: AdminPostEditPagePro
         <div className="mb-8 border-b-2 border-line pb-8">
           <Link href="/admin/posts" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground">
             <ArrowLeft size={16} aria-hidden="true" />
-            Draft 목록
+            관리자 목록
           </Link>
           <p className="mt-6 text-sm font-medium text-accent">Admin</p>
-          <h1 className="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">Draft 편집</h1>
+          <h1 className="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">게시글 편집</h1>
           <p className="mt-4 font-mono text-xs text-muted">{post.slug}</p>
         </div>
 
@@ -76,6 +77,11 @@ export default async function AdminPostEditPage({ params }: AdminPostEditPagePro
               required
             />
           </label>
+
+          <div className="block">
+            <span className="text-sm font-medium text-muted">Content Markdown</span>
+            <MarkdownEditorField name="contentMarkdown" initialMarkdown={post.contentMarkdown} />
+          </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">

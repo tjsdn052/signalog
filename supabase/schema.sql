@@ -57,6 +57,7 @@ create table public.posts (
   title text not null,
   excerpt text not null,
   summary text not null,
+  content_markdown text,
   source_url text not null,
   category text not null,
   signal_score integer not null default 0,

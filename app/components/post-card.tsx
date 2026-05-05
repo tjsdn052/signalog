@@ -2,6 +2,7 @@ import { Clock3, Languages } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SignalPost } from "../lib/posts";
+import { getPostHref } from "../lib/urls";
 
 type PostCardProps = {
   post: SignalPost;
@@ -23,7 +24,7 @@ export function PostCard({ post }: PostCardProps) {
           </span>
         </div>
         <h3 className="mt-3 line-clamp-2 text-xl font-semibold leading-snug">
-          <Link href={`/posts/${post.slug}`} className="hover:underline">
+          <Link href={getPostHref(post.slug)} className="hover:underline">
             {post.title}
           </Link>
         </h3>

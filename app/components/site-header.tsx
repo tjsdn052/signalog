@@ -1,5 +1,7 @@
-import { Rss, Search } from "lucide-react";
+import { Rss, Search, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { getAdminAccess } from "@/server/auth/admin";
+import { LogoutButton } from "../admin/components/logout-button";
 import type { SignalPost } from "../lib/posts";
 import { TagSidebarSheet } from "./tag-sidebar-sheet";
 
@@ -7,7 +9,10 @@ type SiteHeaderProps = {
   posts: SignalPost[];
 };
 
-export function SiteHeader({ posts }: SiteHeaderProps) {
+export async function SiteHeader({ posts }: SiteHeaderProps) {
+  const adminAccess = await getAdminAccess();
+  const isAdmin = adminAccess.status === "allowed";
+
   return (
     <header className="border-b-2 border-line">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
@@ -23,15 +28,39 @@ export function SiteHeader({ posts }: SiteHeaderProps) {
             </span>
           </Link>
         </div>
-        <label className="hidden h-10 w-72 items-center gap-3 border-2 border-line bg-panel px-3 text-sm text-muted sm:flex">
-          <Search size={16} aria-hidden="true" />
-          <span className="sr-only">게시글 검색</span>
-          <input
-            type="search"
-            placeholder=""
-            className="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted outline-none"
-          />
-        </label>
+        <div className="flex items-center gap-2">
+          {isAdmin ? (
+            <>
+            <Link
+              href="/admin/posts"
+              className="inline-flex h-10 items-center gap-2 border-2 border-line bg-panel px-3 text-sm font-medium text-foreground hover:bg-foreground hover:text-background md:hidden"
+            >
+              <ShieldCheck size={15} aria-hidden="true" />
+              관리자
+            </Link>
+            <div className="hidden items-center gap-2 md:flex">
+              <Link
+                href="/admin/posts"
+                className="inline-flex h-10 items-center gap-2 border-2 border-line bg-panel px-3 text-sm font-medium text-foreground hover:bg-foreground hover:text-background"
+              >
+                <ShieldCheck size={15} aria-hidden="true" />
+                관리자
+              </Link>
+              <span className="max-w-40 truncate text-xs text-muted">{adminAccess.user.email}</span>
+              <LogoutButton />
+            </div>
+            </>
+          ) : null}
+          <label className="hidden h-10 w-72 items-center gap-3 border-2 border-line bg-panel px-3 text-sm text-muted sm:flex">
+            <Search size={16} aria-hidden="true" />
+            <span className="sr-only">게시글 검색</span>
+            <input
+              type="search"
+              placeholder="검색은 곧 추가됩니다"
+              className="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted outline-none"
+            />
+          </label>
+        </div>
       </div>
     </header>
   );
