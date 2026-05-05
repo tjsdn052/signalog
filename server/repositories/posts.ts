@@ -47,6 +47,16 @@ type UpdateDraftPostInput = {
   tags: string[];
 };
 
+type CreateManualDraftPostInput = {
+  title: string;
+  excerpt: string;
+  summary: string;
+  sourceUrl: string;
+  category: PostCategory;
+  signalScore: number;
+  tags: string[];
+};
+
 type AdminPostDetailRow = {
   id: string;
   slug: string;
@@ -183,6 +193,53 @@ export async function listAdminTagNames(): Promise<string[]> {
   }
 
   return (data ?? []).map((tag) => tag.name as string);
+}
+
+export async function createManualDraftPost(input: CreateManualDraftPostInput): Promise<AdminPostDetail> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("posts")
+    .insert({
+      slug: createSlug(input.title),
+      title: input.title,
+      excerpt: input.excerpt,
+      summary: input.summary,
+      source_url: input.sourceUrl,
+      category: input.category,
+      signal_score: input.signalScore,
+      status: "draft",
+    })
+    .select("id, slug, title, excerpt, summary, category, signal_score, status, source_url, created_at")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  if (input.tags.length > 0) {
+    const tagIds = await Promise.all(input.tags.map((tag) => upsertTag(tag)));
+    const { error: tagError } = await supabase
+      .from("post_tags")
+      .upsert(tagIds.map((tagId) => ({ post_id: data.id as string, tag_id: tagId })));
+
+    if (tagError) {
+      throw tagError;
+    }
+  }
+
+  return {
+    id: data.id as string,
+    slug: data.slug as string,
+    title: data.title as string,
+    excerpt: data.excerpt as string,
+    summary: data.summary as string,
+    category: data.category as string,
+    signalScore: data.signal_score as number,
+    status: data.status as string,
+    sourceUrl: data.source_url as string,
+    createdAt: data.created_at as string,
+    tags: input.tags,
+  };
 }
 
 export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail | null> {

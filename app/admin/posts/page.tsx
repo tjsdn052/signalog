@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, PenLine } from "lucide-react";
 import Link from "next/link";
 import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { requireAdminUser } from "@/server/auth/admin";
@@ -33,7 +33,16 @@ export default async function AdminPostsPage() {
           {user ? (
             <div className="flex flex-col gap-3 sm:items-end">
               <span className="text-sm text-muted">{user.email}</span>
-              <LogoutButton />
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/admin/posts/new"
+                  className="inline-flex h-9 items-center gap-2 border-2 border-line px-3 text-sm font-medium hover:bg-foreground hover:text-background"
+                >
+                  <PenLine size={15} aria-hidden="true" />
+                  글 작성
+                </Link>
+                <LogoutButton />
+              </div>
             </div>
           ) : null}
         </div>
