@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import type { SignalPost } from "../lib/posts";
+import { getPostHref } from "../lib/urls";
 import { TagBadge } from "./tag-badge";
 
 type TrendingPostCarouselProps = {
@@ -47,7 +48,7 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
                     <span>{post.category}</span>
                   </div>
                   <h1 className="mt-4 max-w-4xl text-2xl font-semibold leading-tight tracking-normal sm:mt-5 sm:text-5xl">
-                    <Link href={`/posts/${post.slug}`} className="hover:underline">
+                    <Link href={getPostHref(post.slug)} className="hover:underline">
                       {post.title}
                     </Link>
                   </h1>
@@ -58,7 +59,7 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
                     ))}
                   </div>
                   <Link
-                    href={`/posts/${post.slug}`}
+                    href={getPostHref(post.slug)}
                     className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent sm:mt-6"
                   >
                     번역 요약 읽기

@@ -11,6 +11,7 @@ import { MarkdownBody } from "@/app/components/markdown-body";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { getPublishedPostBySlug } from "@/server/repositories/posts";
 import { getPostBySlug } from "../../lib/posts";
+import { decodeRouteSlug } from "../../lib/urls";
 
 type PostPageProps = {
   params: Promise<{
@@ -23,7 +24,8 @@ export const dynamicParams = true;
 
 export async function generateMetadata({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = isSupabasePublicConfigured() ? await getPublishedPostBySlug(slug) : getPostBySlug(slug);
+  const decodedSlug = decodeRouteSlug(slug);
+  const post = isSupabasePublicConfigured() ? await getPublishedPostBySlug(decodedSlug) : getPostBySlug(decodedSlug);
 
   if (!post) {
     return {
@@ -39,7 +41,8 @@ export async function generateMetadata({ params }: PostPageProps) {
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = isSupabasePublicConfigured() ? await getPublishedPostBySlug(slug) : getPostBySlug(slug);
+  const decodedSlug = decodeRouteSlug(slug);
+  const post = isSupabasePublicConfigured() ? await getPublishedPostBySlug(decodedSlug) : getPostBySlug(decodedSlug);
 
   if (!post) {
     notFound();
