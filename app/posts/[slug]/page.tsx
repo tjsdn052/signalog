@@ -6,12 +6,16 @@ import {
   Tag,
   TrendingUp,
 } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MarkdownBody } from "@/app/components/markdown-body";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
+import { getAdminAccess } from "@/server/auth/admin";
 import { getPublishedPostBySlug } from "@/server/repositories/posts";
 import { getPostBySlug } from "../../lib/posts";
 import { decodeRouteSlug } from "../../lib/urls";
+import { deletePostAction } from "./actions";
+import { DeletePostButton } from "./delete-post-button";
 
 type PostPageProps = {
   params: Promise<{
@@ -42,11 +46,16 @@ export async function generateMetadata({ params }: PostPageProps) {
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
   const decodedSlug = decodeRouteSlug(slug);
-  const post = isSupabasePublicConfigured() ? await getPublishedPostBySlug(decodedSlug) : getPostBySlug(decodedSlug);
+  const [post, adminAccess] = await Promise.all([
+    isSupabasePublicConfigured() ? getPublishedPostBySlug(decodedSlug) : getPostBySlug(decodedSlug),
+    getAdminAccess(),
+  ]);
 
   if (!post) {
     notFound();
   }
+
+  const canManagePost = adminAccess.status === "allowed" && Boolean(post.id);
 
   return (
     <main className="min-h-screen">
@@ -74,6 +83,23 @@ export default async function PostPage({ params }: PostPageProps) {
           {post.title}
         </h1>
         <p className="mt-5 text-lg leading-8 text-muted">{post.excerpt}</p>
+
+        {canManagePost ? (
+          <div className="mt-6 flex flex-wrap items-center gap-2 border-2 border-line bg-panel p-3">
+            <span className="mr-auto text-sm text-muted">관리자 모드</span>
+            <Link
+              href={`/admin/posts/${post.id}`}
+              className="inline-flex h-9 items-center justify-center border-2 border-line bg-foreground px-3 text-sm font-medium text-background hover:bg-panel hover:text-foreground"
+            >
+              수정
+            </Link>
+            <form action={deletePostAction}>
+              <input type="hidden" name="postId" value={post.id} />
+              <input type="hidden" name="slug" value={post.slug} />
+              <DeletePostButton />
+            </form>
+          </div>
+        ) : null}
 
         <section className="mt-8 border-2 border-line bg-panel p-5">
           <div className="flex items-center gap-2 text-sm font-medium text-accent">

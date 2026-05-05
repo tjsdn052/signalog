@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getPostHref } from "@/app/lib/urls";
 import { requireAdminUser } from "@/server/auth/admin";
-import { updateDraftPost } from "@/server/repositories/posts";
+import { updateAdminPost } from "@/server/repositories/posts";
 import { getCategory, getContentMarkdown, getRequiredString, getSignalScore, getTags } from "../form-utils";
 
 export async function updateDraftPostAction(formData: FormData) {
@@ -11,7 +12,7 @@ export async function updateDraftPostAction(formData: FormData) {
 
   const id = getRequiredString(formData, "id");
 
-  await updateDraftPost({
+  const post = await updateAdminPost({
     id,
     title: getRequiredString(formData, "title"),
     excerpt: getRequiredString(formData, "excerpt"),
@@ -24,5 +25,13 @@ export async function updateDraftPostAction(formData: FormData) {
 
   revalidatePath("/admin/posts");
   revalidatePath(`/admin/posts/${id}`);
+  revalidatePath("/");
+  revalidatePath("/posts");
+
+  if (post.status === "published") {
+    revalidatePath(getPostHref(post.slug));
+    redirect(getPostHref(post.slug));
+  }
+
   redirect("/admin/posts");
 }

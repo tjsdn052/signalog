@@ -1,4 +1,5 @@
 export type SignalPost = {
+  id?: string;
   slug: string;
   title: string;
   excerpt: string;

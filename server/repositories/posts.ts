@@ -80,6 +80,7 @@ type AdminPostDetailRow = {
 };
 
 type PublishedPostRow = {
+  id: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -250,7 +251,7 @@ export async function createManualDraftPost(input: CreateManualDraftPostInput): 
   };
 }
 
-export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail | null> {
+export async function getAdminPost(postId: string): Promise<AdminPostDetail | null> {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("posts")
@@ -275,7 +276,6 @@ export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail
       `,
     )
     .eq("id", postId)
-    .eq("status", "draft")
     .maybeSingle();
 
   if (error) {
@@ -306,7 +306,7 @@ export async function getAdminDraftPost(postId: string): Promise<AdminPostDetail
   };
 }
 
-export async function updateDraftPost(input: UpdateDraftPostInput): Promise<AdminPostDetail> {
+export async function updateAdminPost(input: UpdateDraftPostInput): Promise<AdminPostDetail> {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("posts")
@@ -321,7 +321,6 @@ export async function updateDraftPost(input: UpdateDraftPostInput): Promise<Admi
       updated_at: new Date().toISOString(),
     })
     .eq("id", input.id)
-    .eq("status", "draft")
     .select("id, slug, title, excerpt, summary, content_markdown, category, signal_score, status, source_url, created_at")
     .single();
 
@@ -387,6 +386,15 @@ export async function publishPost(postId: string): Promise<PublishedPost> {
   };
 }
 
+export async function deletePost(postId: string) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.from("posts").delete().eq("id", postId);
+
+  if (error) {
+    throw error;
+  }
+}
+
 function getSourceName(sourceUrl: string) {
   try {
     return new URL(sourceUrl).hostname.replace(/^www\./, "");
@@ -406,6 +414,7 @@ function formatPublishedDate(post: Pick<PublishedPostRow, "published_at" | "crea
 
 function mapPublishedPost(post: PublishedPostRow): SignalPost {
   return {
+    id: post.id,
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt,
@@ -426,6 +435,7 @@ function mapPublishedPost(post: PublishedPostRow): SignalPost {
 
 function getPublishedPostSelect() {
   return `
+    id,
     slug,
     title,
     excerpt,
