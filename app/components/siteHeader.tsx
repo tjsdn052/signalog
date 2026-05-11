@@ -1,9 +1,9 @@
 import { Rss, Search, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { getAdminAccess } from "@/server/auth/admin";
-import { LogoutButton } from "../admin/components/logout-button";
+import { LogoutButton } from "../admin/components/logoutButton";
 import type { SignalPost } from "../lib/posts";
-import { TagSidebarSheet } from "./tag-sidebar-sheet";
+import { TagSidebarSheet } from "./tagSidebarSheet";
 
 type SiteHeaderProps = {
   posts: SignalPost[];

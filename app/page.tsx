@@ -1,6 +1,6 @@
-import { LatestPostCarousel } from "./components/latest-post-carousel";
-import { TimelinePreview } from "./components/timeline-preview";
-import { TrendingPostCarousel } from "./components/trending-post-carousel";
+import { LatestPostCarousel } from "./components/latestPostCarousel";
+import { TimelinePreview } from "./components/timelinePreview";
+import { TrendingPostCarousel } from "./components/trendingPostCarousel";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { listFeaturedPublishedPosts, listPublishedPosts } from "@/server/repositories/posts";
 import { posts, timelineEvents } from "./lib/posts";

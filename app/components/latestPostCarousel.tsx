@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import type { SignalPost } from "../lib/posts";
-import { PostCard } from "./post-card";
+import { PostCard } from "./postCard";
 
 type LatestPostCarouselProps = {
   posts: SignalPost[];

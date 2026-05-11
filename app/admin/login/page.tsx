@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { isSupabaseAuthConfigured } from "@/lib/supabase/config";
 import { getAdminAccess } from "@/server/auth/admin";
-import { LoginForm } from "./login-form";
+import { LoginForm } from "./loginForm";
 
 export const dynamic = "force-dynamic";
 

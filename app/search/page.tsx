@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import Link from "next/link";
-import { PostCard } from "../components/post-card";
+import { PostCard } from "../components/postCard";
 import { posts } from "../lib/posts";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { searchPublishedPosts } from "@/server/repositories/posts";

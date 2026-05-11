@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import type { SignalPost } from "../lib/posts";
 import { getPostHref } from "../lib/urls";
-import { TagBadge } from "./tag-badge";
+import { TagBadge } from "./tagBadge";
 
 type TrendingPostCarouselProps = {
   posts: SignalPost[];

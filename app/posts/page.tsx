@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { PostCard } from "../components/post-card";
+import { PostCard } from "../components/postCard";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { listPublishedPosts } from "@/server/repositories/posts";
 import { posts } from "../lib/posts";

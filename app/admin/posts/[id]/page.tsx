@@ -5,10 +5,10 @@ import { requireAdminUser } from "@/server/auth/admin";
 import { POST_CATEGORIES } from "@/server/posts/categories";
 import { POST_TAGS } from "@/server/posts/tags";
 import { getAdminPost, listAdminTagNames } from "@/server/repositories/posts";
-import { MarkdownEditorField } from "../markdown-editor-field";
+import { MarkdownEditorField } from "../markdownEditorField";
 import { updateDraftPostAction } from "./actions";
-import { SaveButton } from "./save-button";
-import { TagSelector } from "./tag-selector";
+import { SaveButton } from "./saveButton";
+import { TagSelector } from "./tagSelector";
 
 type AdminPostEditPageProps = {
   params: Promise<{
