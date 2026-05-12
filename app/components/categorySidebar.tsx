@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { SheetClose } from "@/components/ui/sheet";
 import { POST_CATEGORIES } from "@/server/posts/categories";
 
 type CategorySidebarProps = {
@@ -29,6 +31,30 @@ function getCategoryHref(category: string) {
   return `/posts?${params.toString()}`;
 }
 
+function CategoryLink({
+  children,
+  className,
+  closeOnSelect,
+  href,
+}: {
+  children: ReactNode;
+  className: string;
+  closeOnSelect: boolean;
+  href: string;
+}) {
+  const link = (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
+
+  if (!closeOnSelect) {
+    return link;
+  }
+
+  return <SheetClose asChild>{link}</SheetClose>;
+}
+
 export function CategorySidebar({ categoryCounts, totalCount, variant = "panel" }: CategorySidebarProps) {
   const categories = createCategoryCounts(categoryCounts);
   const isSheet = variant === "sheet";
@@ -47,22 +73,24 @@ export function CategorySidebar({ categoryCounts, totalCount, variant = "panel" 
       </div>
 
       <div className={categoryListClassName}>
-        <Link
+        <CategoryLink
           href="/posts"
+          closeOnSelect={isSheet}
           className={`${categoryLinkClassName} bg-foreground font-medium text-background`}
         >
           전체
           <span className="font-mono text-xs">{totalCount}</span>
-        </Link>
+        </CategoryLink>
         {categories.map((category) => (
-          <Link
+          <CategoryLink
             key={category.name}
             href={getCategoryHref(category.name)}
+            closeOnSelect={isSheet}
             className={`${categoryLinkClassName} text-muted hover:text-foreground`}
           >
             {category.name}
             <span className="font-mono text-xs">{category.count}</span>
-          </Link>
+          </CategoryLink>
         ))}
       </div>
     </aside>
