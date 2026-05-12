@@ -4,6 +4,8 @@ const SUBREDDITS = ["LocalLLaMA", "programming", "reactjs", "nextjs", "MachineLe
 const REDDIT_USER_AGENT = "SignalogTrendCollector/0.1";
 const REDDIT_POST_LIMIT = 10;
 const MAX_EXCERPT_LENGTH = 240;
+const MAX_COMMENT_COUNT = 3;
+const MAX_COMMENT_LENGTH = 180;
 
 type RedditListing = {
   data?: {
@@ -26,6 +28,22 @@ type RedditPost = {
   removed_by_category?: string | null;
 };
 
+type RedditComment = {
+  body?: string;
+  score?: number;
+  stickied?: boolean;
+  author?: string;
+};
+
+type RedditCommentListing = Array<{
+  data?: {
+    children?: Array<{
+      kind?: string;
+      data?: RedditComment;
+    }>;
+  };
+}>;
+
 function getRedditPostUrl(post: RedditPost) {
   if (post.permalink) {
     return `https://www.reddit.com${post.permalink}`;
@@ -34,14 +52,60 @@ function getRedditPostUrl(post: RedditPost) {
   return post.url ?? "";
 }
 
-function getExcerpt(post: RedditPost) {
-  const text = post.selftext?.replace(/\s+/g, " ").trim();
+function normalizeText(text?: string) {
+  return text?.replace(/\s+/g, " ").trim();
+}
 
-  if (!text) {
+function truncateText(text: string, maxLength: number) {
+  return text.length > maxLength ? `${text.slice(0, maxLength).trim()}...` : text;
+}
+
+function getPostText(post: RedditPost) {
+  const text = normalizeText(post.selftext);
+
+  if (!text || ["[deleted]", "[removed]"].includes(text.toLowerCase())) {
     return undefined;
   }
 
-  return text.length > MAX_EXCERPT_LENGTH ? `${text.slice(0, MAX_EXCERPT_LENGTH).trim()}...` : text;
+  return truncateText(text, MAX_EXCERPT_LENGTH);
+}
+
+function isCollectableComment(comment: RedditComment) {
+  const body = normalizeText(comment.body);
+
+  if (!body || comment.stickied) {
+    return false;
+  }
+
+  return !["[deleted]", "[removed]"].includes(body.toLowerCase());
+}
+
+function getCommentText(comment: RedditComment) {
+  const body = normalizeText(comment.body);
+
+  if (!body) {
+    return "";
+  }
+
+  const score = typeof comment.score === "number" ? ` (${comment.score}점)` : "";
+
+  return `- ${truncateText(body, MAX_COMMENT_LENGTH)}${score}`;
+}
+
+function getExcerpt(post: RedditPost, comments: RedditComment[]) {
+  const postText = getPostText(post);
+  const commentText = comments.map(getCommentText).filter(Boolean);
+
+  if (!postText && commentText.length === 0) {
+    return undefined;
+  }
+
+  return [
+    postText ? `본문: ${postText}` : undefined,
+    commentText.length > 0 ? `상위 댓글:\n${commentText.join("\n")}` : undefined,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 function getPublishedAt(post: RedditPost) {
@@ -74,6 +138,52 @@ function isCollectablePost(post: RedditPost) {
   return !["[deleted]", "[removed]"].includes(title.toLowerCase());
 }
 
+async function collectTopComments(post: RedditPost): Promise<RedditComment[]> {
+  const permalink = post.permalink;
+
+  if (!permalink || (post.num_comments ?? 0) <= 0) {
+    return [];
+  }
+
+  const response = await fetch(`https://www.reddit.com${permalink}.json?limit=${MAX_COMMENT_COUNT}&depth=1&sort=top`, {
+    headers: {
+      "User-Agent": REDDIT_USER_AGENT,
+      Accept: "application/json",
+    },
+    next: {
+      revalidate: 0,
+    },
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const listing = (await response.json()) as RedditCommentListing;
+  const comments = listing[1]?.data?.children ?? [];
+
+  return comments
+    .filter((child) => child.kind === "t1")
+    .map((child) => child.data)
+    .filter((comment): comment is RedditComment => Boolean(comment))
+    .filter(isCollectableComment)
+    .slice(0, MAX_COMMENT_COUNT);
+}
+
+async function toRawTrendItem(subreddit: string, post: RedditPost): Promise<RawTrendItem> {
+  const comments = await collectTopComments(post);
+
+  return {
+    source: `Reddit r/${subreddit}`,
+    sourceType: "reddit",
+    url: getRedditPostUrl(post),
+    title: post.title?.trim() ?? "",
+    excerpt: getExcerpt(post, comments),
+    publishedAt: getPublishedAt(post),
+    score: getSignalScore(post),
+  };
+}
+
 async function collectSubredditHotItems(subreddit: string): Promise<RawTrendItem[]> {
   const response = await fetch(`https://www.reddit.com/r/${subreddit}/hot.json?limit=${REDDIT_POST_LIMIT}`, {
     headers: {
@@ -90,20 +200,13 @@ async function collectSubredditHotItems(subreddit: string): Promise<RawTrendItem
   }
 
   const listing = (await response.json()) as RedditListing;
-
-  return (listing.data?.children ?? [])
+  const posts = (listing.data?.children ?? [])
     .map((child) => child.data)
     .filter((post): post is RedditPost => Boolean(post))
-    .filter(isCollectablePost)
-    .map((post) => ({
-      source: `Reddit r/${subreddit}`,
-      sourceType: "reddit",
-      url: getRedditPostUrl(post),
-      title: post.title?.trim() ?? "",
-      excerpt: getExcerpt(post),
-      publishedAt: getPublishedAt(post),
-      score: getSignalScore(post),
-    }));
+    .filter(isCollectablePost);
+  const results = await Promise.allSettled(posts.map((post) => toRawTrendItem(subreddit, post)));
+
+  return results.flatMap((result) => (result.status === "fulfilled" ? result.value : []));
 }
 
 export async function collectRedditItems(): Promise<RawTrendItem[]> {
