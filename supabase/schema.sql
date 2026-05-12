@@ -1,6 +1,6 @@
 create extension if not exists pgcrypto;
 
-create type public.source_type as enum ('rss', 'github', 'hacker-news');
+create type public.source_type as enum ('rss', 'github', 'hacker-news', 'reddit');
 create type public.raw_item_status as enum ('collected', 'drafted', 'discarded');
 create type public.post_status as enum ('draft', 'published', 'archived');
 create type public.ai_task_type as enum ('summarize', 'translate', 'classify', 'prepare-draft');
