@@ -4,7 +4,14 @@ import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { requireAdminUser } from "@/server/auth/admin";
 import { listAdminPosts } from "@/server/repositories/posts";
 import { LogoutButton } from "../components/logoutButton";
-import { deleteAllPostsAction, deleteDraftPostAction, publishAllDraftPostsAction, publishPostAction } from "./actions";
+import {
+  collectPostsAction,
+  deleteAllPostsAction,
+  deleteDraftPostAction,
+  publishAllDraftPostsAction,
+  publishPostAction,
+} from "./actions";
+import { CollectButton } from "./collectButton";
 import { DeleteAllButton } from "./deleteAllButton";
 import { DeleteButton } from "./deleteButton";
 import { PublishAllButton } from "./publishAllButton";
@@ -36,7 +43,7 @@ export default async function AdminPostsPage() {
           {user ? (
             <div className="flex flex-col gap-3 sm:items-end">
               <span className="text-sm text-muted">{user.email}</span>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 <Link
                   href="/admin/posts/new"
                   className="inline-flex h-9 items-center gap-2 border-2 border-line px-3 text-sm font-medium hover:bg-foreground hover:text-background"
@@ -44,6 +51,9 @@ export default async function AdminPostsPage() {
                   <PenLine size={15} aria-hidden="true" />
                   글 작성
                 </Link>
+                <form action={collectPostsAction}>
+                  <CollectButton />
+                </form>
                 {posts.length > 0 ? (
                   <form action={publishAllDraftPostsAction}>
                     <PublishAllButton />
@@ -119,10 +129,10 @@ export default async function AdminPostsPage() {
                     </td>
                     <td className="px-3 py-4 align-top">
                       <div className="mx-auto flex w-20 flex-col items-stretch gap-2">
-                      <form action={publishPostAction}>
-                        <input type="hidden" name="postId" value={post.id} />
-                        <PublishButton />
-                      </form>
+                        <form action={publishPostAction}>
+                          <input type="hidden" name="postId" value={post.id} />
+                          <PublishButton />
+                        </form>
                         <form action={deleteDraftPostAction}>
                           <input type="hidden" name="postId" value={post.id} />
                           <DeleteButton />

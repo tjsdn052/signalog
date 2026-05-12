@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdminUser } from "@/server/auth/admin";
+import { collectTrends } from "@/server/jobs/collect-trends";
 import { deleteAllPosts, deletePost, publishAllDraftPosts, publishPost } from "@/server/repositories/posts";
 
 export async function publishPostAction(formData: FormData) {
@@ -54,6 +55,15 @@ export async function deleteDraftPostAction(formData: FormData) {
 export async function deleteAllPostsAction() {
   await requireAdminUser();
   await deleteAllPosts();
+
+  revalidatePath("/");
+  revalidatePath("/posts");
+  revalidatePath("/admin/posts");
+}
+
+export async function collectPostsAction() {
+  await requireAdminUser();
+  await collectTrends();
 
   revalidatePath("/");
   revalidatePath("/posts");
