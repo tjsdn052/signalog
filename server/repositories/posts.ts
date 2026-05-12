@@ -497,15 +497,23 @@ function getPublishedPostSelect() {
 export async function listPublishedPosts({
   limit,
   offset = 0,
+  category,
 }: {
   limit: number;
   offset?: number;
+  category?: string;
 }): Promise<PublishedPostList> {
   const supabase = getSupabasePublic();
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("posts")
     .select(getPublishedPostSelect(), { count: "exact" })
-    .eq("status", "published")
+    .eq("status", "published");
+
+  if (category) {
+    query = query.eq("category", category);
+  }
+
+  const { data, error, count } = await query
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);

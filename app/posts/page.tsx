@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { PostCard } from "../components/postCard";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
+import { isPostCategory } from "@/server/posts/categories";
 import { listPublishedPosts } from "@/server/repositories/posts";
 import { posts } from "../lib/posts";
 
@@ -9,6 +10,7 @@ const POSTS_PER_PAGE = 10;
 
 type PostsPageProps = {
   searchParams: Promise<{
+    category?: string;
     page?: string;
   }>;
 };
@@ -23,6 +25,30 @@ function getCurrentPage(page?: string) {
   return parsedPage;
 }
 
+function getCategoryFilter(category?: string) {
+  if (!category || !isPostCategory(category)) {
+    return undefined;
+  }
+
+  return category;
+}
+
+function getPostsHref({ page, category }: { page: number; category?: string }) {
+  const params = new URLSearchParams();
+
+  if (category) {
+    params.set("category", category);
+  }
+
+  if (page > 1) {
+    params.set("page", String(page));
+  }
+
+  const query = params.toString();
+
+  return query ? `/posts?${query}` : "/posts";
+}
+
 export const metadata = {
   title: "전체 게시글 | 시그널로그",
   description: "AI가 수집하고 번역한 기술 시그널 전체 목록",
@@ -31,17 +57,20 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function PostsPage({ searchParams }: PostsPageProps) {
-  const { page } = await searchParams;
+  const { category, page } = await searchParams;
+  const categoryFilter = getCategoryFilter(category);
   const requestedPage = getCurrentPage(page);
   const hasSupabasePublic = isSupabasePublicConfigured();
+  const fallbackPosts = categoryFilter ? posts.filter((post) => post.category === categoryFilter) : posts;
   const publishedPostList = hasSupabasePublic
     ? await listPublishedPosts({
         limit: POSTS_PER_PAGE,
         offset: (requestedPage - 1) * POSTS_PER_PAGE,
+        category: categoryFilter,
       })
     : {
-        posts: posts.slice((requestedPage - 1) * POSTS_PER_PAGE, requestedPage * POSTS_PER_PAGE),
-        total: posts.length,
+        posts: fallbackPosts.slice((requestedPage - 1) * POSTS_PER_PAGE, requestedPage * POSTS_PER_PAGE),
+        total: fallbackPosts.length,
       };
   const totalPages = Math.max(1, Math.ceil(publishedPostList.total / POSTS_PER_PAGE));
   const currentPage = Math.min(requestedPage, totalPages);
@@ -50,8 +79,8 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
     currentPage === requestedPage
       ? publishedPostList.posts
       : hasSupabasePublic
-        ? (await listPublishedPosts({ limit: POSTS_PER_PAGE, offset: startIndex })).posts
-        : posts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+        ? (await listPublishedPosts({ limit: POSTS_PER_PAGE, offset: startIndex, category: categoryFilter })).posts
+        : fallbackPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
   const hasPreviousPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
 
@@ -61,9 +90,13 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         <div className="mb-8 flex flex-col gap-4 border-b-2 border-line pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-medium text-accent">All Signals</p>
-            <h1 className="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">전체 게시글</h1>
+            <h1 className="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">
+              {categoryFilter ? `${categoryFilter} 게시글` : "전체 게시글"}
+            </h1>
             <p className="mt-4 max-w-2xl leading-7 text-muted">
-              수집된 기술 시그널을 최신순으로 모았습니다.
+              {categoryFilter
+                ? `${categoryFilter} 카테고리의 기술 시그널을 최신순으로 모았습니다.`
+                : "수집된 기술 시그널을 최신순으로 모았습니다."}
             </p>
           </div>
           <div className="text-sm text-muted">
@@ -90,7 +123,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
             className={`inline-flex items-center gap-2 rounded-md border-2 border-line px-3 py-2 text-sm font-medium ${
               hasPreviousPage ? "text-foreground hover:bg-foreground hover:text-background" : "pointer-events-none text-muted opacity-50"
             }`}
-            href={`/posts?page=${currentPage - 1}`}
+            href={getPostsHref({ page: currentPage - 1, category: categoryFilter })}
           >
             <ChevronLeft size={16} aria-hidden="true" />
             이전
@@ -105,7 +138,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
             className={`inline-flex items-center gap-2 rounded-md border-2 border-line px-3 py-2 text-sm font-medium ${
               hasNextPage ? "text-foreground hover:bg-foreground hover:text-background" : "pointer-events-none text-muted opacity-50"
             }`}
-            href={`/posts?page=${currentPage + 1}`}
+            href={getPostsHref({ page: currentPage + 1, category: categoryFilter })}
           >
             다음
             <ChevronRight size={16} aria-hidden="true" />
