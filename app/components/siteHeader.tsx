@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAdminAccess } from "@/server/auth/admin";
 import { LogoutButton } from "../admin/components/logoutButton";
 import type { SignalPost } from "../lib/posts";
-import { TagSidebarSheet } from "./tagSidebarSheet";
+import { CategorySidebarSheet } from "./categorySidebarSheet";
 
 type SiteHeaderProps = {
   posts: SignalPost[];
@@ -17,7 +17,7 @@ export async function SiteHeader({ posts }: SiteHeaderProps) {
     <header className="border-b-2 border-line">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <div className="flex items-center gap-3">
-          <TagSidebarSheet posts={posts} />
+          <CategorySidebarSheet posts={posts} />
           <Link href="/" className="flex items-center gap-3">
             <span className="flex size-9 items-center justify-center rounded-md bg-foreground text-background">
               <Rss size={18} aria-hidden="true" />
