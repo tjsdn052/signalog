@@ -8,14 +8,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MarkdownBody } from "@/app/components/markdown-body";
+import { MarkdownBody } from "@/app/components/markdownBody";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { getAdminAccess } from "@/server/auth/admin";
 import { getPublishedPostBySlug } from "@/server/repositories/posts";
 import { getPostBySlug } from "../../lib/posts";
 import { decodeRouteSlug } from "../../lib/urls";
 import { deletePostAction } from "./actions";
-import { DeletePostButton } from "./delete-post-button";
+import { DeletePostButton } from "./deletePostButton";
 
 type PostPageProps = {
   params: Promise<{

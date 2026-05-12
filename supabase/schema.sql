@@ -1,6 +1,6 @@
 create extension if not exists pgcrypto;
 
-create type public.source_type as enum ('rss', 'github', 'hacker-news');
+create type public.source_type as enum ('rss', 'github', 'hacker-news', 'reddit');
 create type public.raw_item_status as enum ('collected', 'drafted', 'discarded');
 create type public.post_status as enum ('draft', 'published', 'archived');
 create type public.ai_task_type as enum ('summarize', 'translate', 'classify', 'prepare-draft');
@@ -44,6 +44,7 @@ create table public.raw_items (
   url text not null unique,
   title text not null,
   excerpt text,
+  raw_payload jsonb,
   published_at timestamptz,
   score integer,
   status public.raw_item_status not null default 'collected',
@@ -56,6 +57,7 @@ create table public.posts (
   slug text not null unique,
   title text not null,
   excerpt text not null,
+  ai_summary text,
   summary text not null,
   content_markdown text,
   source_url text not null,

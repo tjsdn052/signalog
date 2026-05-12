@@ -7,7 +7,7 @@ type TimelinePreviewProps = {
   events: TimelineEvent[];
 };
 
-const TimelineChart = dynamic(() => import("./timeline-chart").then((mod) => mod.TimelineChart), {
+const TimelineChart = dynamic(() => import("./timelineChart").then((mod) => mod.TimelineChart), {
   ssr: false,
 });
 

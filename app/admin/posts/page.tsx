@@ -3,9 +3,9 @@ import Link from "next/link";
 import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { requireAdminUser } from "@/server/auth/admin";
 import { listAdminPosts } from "@/server/repositories/posts";
-import { LogoutButton } from "../components/logout-button";
+import { LogoutButton } from "../components/logoutButton";
 import { publishPostAction } from "./actions";
-import { PublishButton } from "./publish-button";
+import { PublishButton } from "./publishButton";
 
 export const dynamic = "force-dynamic";
 

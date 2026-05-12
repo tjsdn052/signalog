@@ -33,6 +33,7 @@ export async function saveRawItem(input: SaveRawItemInput) {
         url: input.item.url,
         title: input.item.title,
         excerpt: input.item.excerpt,
+        raw_payload: input.item.rawPayload ?? null,
         published_at: input.item.publishedAt,
         score: input.item.score,
         status: "drafted",

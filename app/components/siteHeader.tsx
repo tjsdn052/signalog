@@ -1,9 +1,9 @@
 import { Rss, Search, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { getAdminAccess } from "@/server/auth/admin";
-import { LogoutButton } from "../admin/components/logout-button";
+import { LogoutButton } from "../admin/components/logoutButton";
 import type { SignalPost } from "../lib/posts";
-import { TagSidebarSheet } from "./tag-sidebar-sheet";
+import { TagSidebarSheet } from "./tagSidebarSheet";
 
 type SiteHeaderProps = {
   posts: SignalPost[];
@@ -51,15 +51,19 @@ export async function SiteHeader({ posts }: SiteHeaderProps) {
             </div>
             </>
           ) : null}
-          <label className="hidden h-10 w-72 items-center gap-3 border-2 border-line bg-panel px-3 text-sm text-muted sm:flex">
+          <form action="/search" className="hidden h-10 w-72 items-center gap-3 border-2 border-line bg-panel px-3 text-sm text-muted sm:flex">
             <Search size={16} aria-hidden="true" />
-            <span className="sr-only">게시글 검색</span>
+            <label htmlFor="site-search-query" className="sr-only">
+              게시글 검색
+            </label>
             <input
+              id="site-search-query"
+              name="q"
               type="search"
-              placeholder="검색은 곧 추가됩니다"
+              placeholder="게시글 검색"
               className="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted outline-none"
             />
-          </label>
+          </form>
         </div>
       </div>
     </header>

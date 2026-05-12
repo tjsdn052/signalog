@@ -11,7 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { SignalPost } from "../lib/posts";
-import { TagSidebar } from "./tag-sidebar";
+import { TagSidebar } from "./tagSidebar";
 
 type TagSidebarSheetProps = {
   posts: SignalPost[];

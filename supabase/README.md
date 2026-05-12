@@ -9,18 +9,26 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 COLLECT_JOB_SECRET=
+CRON_SECRET=
+OPEN_AI_KEY=
 ```
 
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Browser-safe anon key for Supabase Auth.
 - `SUPABASE_SERVICE_ROLE_KEY`: Server-only key used by collection jobs. Never expose this to client components.
 - `COLLECT_JOB_SECRET`: Optional bearer token for `/api/jobs/collect`.
+- `CRON_SECRET`: Bearer token used by Vercel Cron for `/api/cron/collect`.
+- `OPEN_AI_KEY`: Server-only OpenAI API key used to generate draft title, excerpt, summary, and Markdown content. `OPENAI_API_KEY` is also supported as a fallback.
 
 ## Schema
 
 Run `supabase/schema.sql` in the Supabase SQL editor.
 
 If the project was created with "Automatically expose new tables and functions" disabled, run `supabase/grants.sql` after the schema. This grants the server `service_role` permission to write collection data while keeping public reads limited by RLS policies.
+
+If your existing project was created before Reddit collection support, run `supabase/reddit-source-type.sql` once before calling `/api/jobs/collect`.
+
+If your existing project was created before AI-generated post fields, run `supabase/ai-generated-post-fields.sql` once. This adds `raw_items.raw_payload` for original collection payloads and `posts.ai_summary` for generated summaries.
 
 The initial schema includes:
 

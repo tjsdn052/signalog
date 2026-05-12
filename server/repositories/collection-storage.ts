@@ -19,13 +19,25 @@ export async function persistCollection(input: PersistCollectionInput) {
   });
 
   try {
-    for (const draft of input.draftPosts) {
-      const sourceId = await upsertSource(draft.sourceItem);
+    const rawItemIdsByUrl = new Map<string, string>();
+
+    for (const rawItem of input.rawItems) {
+      const sourceId = await upsertSource(rawItem);
       const rawItemId = await saveRawItem({
-        item: draft.sourceItem,
+        item: rawItem,
         sourceId,
         collectionRunId,
       });
+
+      rawItemIdsByUrl.set(rawItem.url, rawItemId);
+    }
+
+    for (const draft of input.draftPosts) {
+      const rawItemId = rawItemIdsByUrl.get(draft.sourceItem.url);
+
+      if (!rawItemId) {
+        continue;
+      }
 
       await saveDraftPost({
         draft,

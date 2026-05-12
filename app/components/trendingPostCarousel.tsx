@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import type { SignalPost } from "../lib/posts";
 import { getPostHref } from "../lib/urls";
-import { TagBadge } from "./tag-badge";
+import { TagBadge } from "./tagBadge";
 
 type TrendingPostCarouselProps = {
   posts: SignalPost[];
@@ -22,15 +22,15 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
     <section className="border-b-2 border-line">
       <div className="mx-auto max-w-6xl px-5 py-12 lg:py-16">
         {posts.length === 0 ? (
-          <article className="min-h-75 border-2 border-line bg-panel p-5 sm:min-h-90 sm:p-6">
+          <article className="flex h-70 flex-col border-2 border-line bg-panel p-5 sm:h-80 sm:p-6">
             <div className="flex items-center gap-2 text-sm text-muted">
               <TrendingUp size={15} aria-hidden="true" />
               Signal
             </div>
-            <h1 className="mt-4 text-2xl font-semibold leading-tight tracking-normal sm:mt-5 sm:text-5xl">
+            <h1 className="mt-4 line-clamp-2 text-2xl font-semibold leading-tight tracking-normal sm:text-4xl">
               아직 게시된 시그널이 없습니다
             </h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted sm:mt-5 sm:text-lg">
+            <p className="mt-4 line-clamp-2 max-w-3xl text-base leading-7 text-muted">
               관리자 페이지에서 draft 게시글을 게시하면 이 영역에 노출됩니다.
             </p>
           </article>
@@ -39,7 +39,7 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
           <CarouselContent className="-ml-0">
             {posts.map((post) => (
               <CarouselItem key={post.slug} className="pl-0">
-                <article className="min-h-75 border-2 border-line bg-panel p-5 sm:min-h-90 sm:p-6">
+                <article className="flex h-70 flex-col border-2 border-line bg-panel p-5 sm:h-80 sm:p-6">
                   <div className="flex items-center justify-between gap-3 text-sm text-muted">
                     <span className="inline-flex items-center gap-2">
                       <TrendingUp size={15} aria-hidden="true" />
@@ -47,20 +47,20 @@ export function TrendingPostCarousel({ posts }: TrendingPostCarouselProps) {
                     </span>
                     <span>{post.category}</span>
                   </div>
-                  <h1 className="mt-4 max-w-4xl text-2xl font-semibold leading-tight tracking-normal sm:mt-5 sm:text-5xl">
+                  <h1 className="mt-4 line-clamp-2 max-w-4xl text-2xl font-semibold leading-tight tracking-normal sm:text-4xl">
                     <Link href={getPostHref(post.slug)} className="hover:underline">
                       {post.title}
                     </Link>
                   </h1>
-                  <p className="mt-4 line-clamp-2 max-w-3xl text-base leading-7 text-muted sm:mt-5 sm:line-clamp-none sm:text-lg">{post.excerpt}</p>
-                  <div className="mt-4 flex flex-wrap gap-2 sm:mt-5">
-                    {post.tags.map((tag) => (
+                  <p className="mt-3 line-clamp-1 max-w-3xl text-base leading-7 text-muted sm:line-clamp-2">{post.excerpt}</p>
+                  <div className="mt-3 flex max-h-9 flex-wrap gap-2 overflow-hidden">
+                    {post.tags.slice(0, 3).map((tag) => (
                       <TagBadge key={tag}>{tag}</TagBadge>
                     ))}
                   </div>
                   <Link
                     href={getPostHref(post.slug)}
-                    className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent sm:mt-6"
+                    className="mt-auto inline-flex items-center gap-2 pt-4 text-sm font-medium text-accent"
                   >
                     번역 요약 읽기
                     <ArrowUpRight size={16} aria-hidden="true" />

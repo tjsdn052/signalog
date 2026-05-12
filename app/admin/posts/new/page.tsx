@@ -4,9 +4,9 @@ import { requireAdminUser } from "@/server/auth/admin";
 import { POST_CATEGORIES } from "@/server/posts/categories";
 import { POST_TAGS } from "@/server/posts/tags";
 import { listAdminTagNames } from "@/server/repositories/posts";
-import { SaveButton } from "../[id]/save-button";
-import { TagSelector } from "../[id]/tag-selector";
-import { MarkdownEditorField } from "../markdown-editor-field";
+import { SaveButton } from "../[id]/saveButton";
+import { TagSelector } from "../[id]/tagSelector";
+import { MarkdownEditorField } from "../markdownEditorField";
 import { createManualPostAction } from "./actions";
 
 export const dynamic = "force-dynamic";
