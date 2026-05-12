@@ -9,6 +9,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 COLLECT_JOB_SECRET=
+CRON_SECRET=
 OPEN_AI_KEY=
 ```
 
@@ -16,6 +17,7 @@ OPEN_AI_KEY=
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Browser-safe anon key for Supabase Auth.
 - `SUPABASE_SERVICE_ROLE_KEY`: Server-only key used by collection jobs. Never expose this to client components.
 - `COLLECT_JOB_SECRET`: Optional bearer token for `/api/jobs/collect`.
+- `CRON_SECRET`: Bearer token used by Vercel Cron for `/api/cron/collect`.
 - `OPEN_AI_KEY`: Server-only OpenAI API key used to generate draft title, excerpt, summary, and Markdown content. `OPENAI_API_KEY` is also supported as a fallback.
 
 ## Schema
