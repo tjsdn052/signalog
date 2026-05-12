@@ -528,6 +528,29 @@ export async function listPublishedPosts({
   };
 }
 
+export async function listPublishedCategoryCounts(): Promise<Array<{ name: string; count: number }>> {
+  const supabase = getSupabasePublic();
+  const { data, error } = await supabase.from("posts").select("category").eq("status", "published");
+
+  if (error) {
+    throw error;
+  }
+
+  const countByCategory = new Map<string, number>();
+
+  for (const post of data ?? []) {
+    const category = post.category as string | null;
+
+    if (!category) {
+      continue;
+    }
+
+    countByCategory.set(category, (countByCategory.get(category) ?? 0) + 1);
+  }
+
+  return [...countByCategory.entries()].map(([name, count]) => ({ name, count }));
+}
+
 function normalizeSearchQuery(query: string) {
   return query.trim().replace(/\s+/g, " ").slice(0, 80);
 }
