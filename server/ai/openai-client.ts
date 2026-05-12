@@ -11,7 +11,15 @@ export function hasOpenAIKey() {
   return Boolean(getOpenAIKey());
 }
 
-export const openai = new OpenAI({
-  apiKey: getOpenAIKey(),
-  timeout: OPENAI_TIMEOUT_MS,
-});
+export function getOpenAIClient() {
+  const apiKey = getOpenAIKey();
+
+  if (!apiKey) {
+    return null;
+  }
+
+  return new OpenAI({
+    apiKey,
+    timeout: OPENAI_TIMEOUT_MS,
+  });
+}

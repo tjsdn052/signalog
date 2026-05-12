@@ -2,7 +2,7 @@ import type { RawTrendItem } from "../collectors/types";
 import type { DraftTrendPost } from "./types";
 import { normalizePostCategory } from "../posts/categories";
 import { normalizePostTags } from "../posts/tags";
-import { hasOpenAIKey, openai, OPENAI_DRAFT_MODEL } from "./openai-client";
+import { getOpenAIClient, OPENAI_DRAFT_MODEL } from "./openai-client";
 import { prepareFallbackDraftPost } from "./draft-fallback";
 import { buildDraftPrompt, DRAFT_SYSTEM_PROMPT } from "./draft-prompt";
 import { DRAFT_TEXT_FORMAT, parseGeneratedDraft, type GeneratedDraftPayload } from "./draft-schema";
@@ -28,7 +28,9 @@ function normalizeGeneratedDraft(item: RawTrendItem, generated: GeneratedDraftPa
 }
 
 async function generateDraftWithOpenAI(item: RawTrendItem): Promise<DraftTrendPost> {
-  if (!hasOpenAIKey()) {
+  const openai = getOpenAIClient();
+
+  if (!openai) {
     return prepareFallbackDraftPost(item);
   }
 
