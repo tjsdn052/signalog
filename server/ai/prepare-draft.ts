@@ -1,68 +1,11 @@
 import type { RawTrendItem } from "../collectors/types";
-import { classifyTrendItem } from "./classify";
 import type { DraftTrendPost } from "./types";
-import { summarizeTrendItem } from "./summarize";
-import { translateTrendTitle } from "./translate";
 import { normalizePostCategory } from "../posts/categories";
 import { normalizePostTags } from "../posts/tags";
 import { hasOpenAIKey, openai, OPENAI_DRAFT_MODEL } from "./openai-client";
-
-type GeneratedDraftPayload = {
-  title?: string;
-  excerpt?: string;
-  aiSummary?: string;
-  contentMarkdown?: string;
-  category?: string;
-  tags?: string[];
-};
-
-function prepareFallbackDraftPost(item: RawTrendItem): DraftTrendPost {
-  const classification = classifyTrendItem(item);
-  const signalScore = Math.min(100, Math.max(0, item.score ?? 50));
-  const summary = summarizeTrendItem(item);
-
-  return {
-    sourceItem: item,
-    title: translateTrendTitle(item),
-    excerpt: summary,
-    aiSummary: summary,
-    summary,
-    contentMarkdown: summary,
-    category: classification.category,
-    tags: classification.tags,
-    signalScore,
-    status: "draft",
-  };
-}
-
-function getRawContext(item: RawTrendItem) {
-  return JSON.stringify(
-    {
-      source: item.source,
-      sourceType: item.sourceType,
-      url: item.url,
-      title: item.title,
-      excerpt: item.excerpt,
-      rawPayload: item.rawPayload,
-      publishedAt: item.publishedAt,
-      score: item.score,
-    },
-    null,
-    2,
-  );
-}
-
-function parseGeneratedDraft(text: string): GeneratedDraftPayload {
-  const trimmed = text.trim();
-  const jsonText = trimmed.startsWith("```")
-    ? trimmed
-        .replace(/^```(?:json)?/i, "")
-        .replace(/```$/i, "")
-        .trim()
-    : trimmed;
-
-  return JSON.parse(jsonText) as GeneratedDraftPayload;
-}
+import { prepareFallbackDraftPost } from "./draft-fallback";
+import { buildDraftPrompt, DRAFT_SYSTEM_PROMPT } from "./draft-prompt";
+import { DRAFT_TEXT_FORMAT, parseGeneratedDraft, type GeneratedDraftPayload } from "./draft-schema";
 
 function normalizeGeneratedDraft(item: RawTrendItem, generated: GeneratedDraftPayload): DraftTrendPost {
   const fallback = prepareFallbackDraftPost(item);
@@ -95,32 +38,18 @@ async function generateDraftWithOpenAI(item: RawTrendItem): Promise<DraftTrendPo
       input: [
         {
           role: "system",
-          content:
-            "You create Korean tech blog draft posts from collected trend items. Return JSON only. Do not include markdown fences.",
+          content: DRAFT_SYSTEM_PROMPT,
         },
         {
           role: "user",
-          content: [
-            "아래 원본 수집 데이터를 기반으로 한국어 블로그 draft를 생성해.",
-            "title: 한국어 제목. 고유명사/제품명은 원문 유지.",
-            "excerpt: 카드에 들어갈 1~2문장 요약.",
-            "aiSummary: 관리자 검수용 2~4문장 요약.",
-            "contentMarkdown: 게시글 본문 Markdown. h2 섹션 2~3개, 핵심 포인트, 왜 중요한지 포함.",
-            "category: 다음 중 하나만 사용: Agentic AI, Models, Infrastructure, Frontend, Mobile, RAG, Open Source, Developer Tools, Product, Security.",
-            "tags: 다음 중 2~4개만 사용: Agents, Workflow, LLM, MCP, Tools, Protocol, React Native, Hermes, Runtime, AI SDK, Streaming, React, RAG, Vector DB, Rerank, Open Source, Local AI, Inference, Security, Product.",
-            "",
-            "반드시 이 JSON 형태만 반환:",
-            "{\"title\":\"\",\"excerpt\":\"\",\"aiSummary\":\"\",\"contentMarkdown\":\"\",\"category\":\"Developer Tools\",\"tags\":[\"Tools\"]}",
-            "",
-            "원본 데이터:",
-            getRawContext(item),
-          ].join("\n"),
+          content: buildDraftPrompt(item),
         },
       ],
       reasoning: {
         effort: "minimal",
       },
       text: {
+        format: DRAFT_TEXT_FORMAT,
         verbosity: "low",
       },
       max_output_tokens: 1800,
