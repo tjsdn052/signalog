@@ -4,7 +4,8 @@ import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { requireAdminUser } from "@/server/auth/admin";
 import { listAdminPosts } from "@/server/repositories/posts";
 import { LogoutButton } from "../components/logoutButton";
-import { deleteDraftPostAction, publishAllDraftPostsAction, publishPostAction } from "./actions";
+import { deleteAllPostsAction, deleteDraftPostAction, publishAllDraftPostsAction, publishPostAction } from "./actions";
+import { DeleteAllButton } from "./deleteAllButton";
 import { DeleteButton } from "./deleteButton";
 import { PublishAllButton } from "./publishAllButton";
 import { PublishButton } from "./publishButton";
@@ -48,6 +49,9 @@ export default async function AdminPostsPage() {
                     <PublishAllButton />
                   </form>
                 ) : null}
+                <form action={deleteAllPostsAction}>
+                  <DeleteAllButton />
+                </form>
                 <LogoutButton />
               </div>
             </div>
