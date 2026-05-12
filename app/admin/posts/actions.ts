@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdminUser } from "@/server/auth/admin";
-import { deletePost, publishAllDraftPosts, publishPost } from "@/server/repositories/posts";
+import { deleteAllPosts, deletePost, publishAllDraftPosts, publishPost } from "@/server/repositories/posts";
 
 export async function publishPostAction(formData: FormData) {
   await requireAdminUser();
@@ -45,6 +45,15 @@ export async function deleteDraftPostAction(formData: FormData) {
   }
 
   await deletePost(postId);
+
+  revalidatePath("/");
+  revalidatePath("/posts");
+  revalidatePath("/admin/posts");
+}
+
+export async function deleteAllPostsAction() {
+  await requireAdminUser();
+  await deleteAllPosts();
 
   revalidatePath("/");
   revalidatePath("/posts");

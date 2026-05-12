@@ -425,6 +425,15 @@ export async function deletePost(postId: string) {
   }
 }
 
+export async function deleteAllPosts() {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.from("posts").delete().not("id", "is", null);
+
+  if (error) {
+    throw error;
+  }
+}
+
 function getSourceName(sourceUrl: string) {
   try {
     return new URL(sourceUrl).hostname.replace(/^www\./, "");
