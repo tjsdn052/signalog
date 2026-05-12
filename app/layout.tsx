@@ -5,7 +5,6 @@ import "@mdxeditor/editor/style.css";
 import { SiteFooter } from "./components/siteFooter";
 import { SiteHeader } from "./components/siteHeader";
 import "./globals.css";
-import { posts } from "./lib/posts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="min-h-full bg-background text-foreground antialiased">
-        <SiteHeader posts={posts} />
+        <SiteHeader />
         {children}
         <SiteFooter />
         <Analytics />

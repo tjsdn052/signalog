@@ -497,15 +497,23 @@ function getPublishedPostSelect() {
 export async function listPublishedPosts({
   limit,
   offset = 0,
+  category,
 }: {
   limit: number;
   offset?: number;
+  category?: string;
 }): Promise<PublishedPostList> {
   const supabase = getSupabasePublic();
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("posts")
     .select(getPublishedPostSelect(), { count: "exact" })
-    .eq("status", "published")
+    .eq("status", "published");
+
+  if (category) {
+    query = query.eq("category", category);
+  }
+
+  const { data, error, count } = await query
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
@@ -518,6 +526,29 @@ export async function listPublishedPosts({
     posts: ((data ?? []) as unknown as PublishedPostRow[]).map(mapPublishedPost),
     total: count ?? 0,
   };
+}
+
+export async function listPublishedCategoryCounts(): Promise<Array<{ name: string; count: number }>> {
+  const supabase = getSupabasePublic();
+  const { data, error } = await supabase.from("posts").select("category").eq("status", "published");
+
+  if (error) {
+    throw error;
+  }
+
+  const countByCategory = new Map<string, number>();
+
+  for (const post of data ?? []) {
+    const category = post.category as string | null;
+
+    if (!category) {
+      continue;
+    }
+
+    countByCategory.set(category, (countByCategory.get(category) ?? 0) + 1);
+  }
+
+  return [...countByCategory.entries()].map(([name, count]) => ({ name, count }));
 }
 
 function normalizeSearchQuery(query: string) {

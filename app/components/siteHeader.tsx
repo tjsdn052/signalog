@@ -1,23 +1,36 @@
 import { Rss, Search, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { isSupabasePublicConfigured } from "@/lib/supabase/config";
 import { getAdminAccess } from "@/server/auth/admin";
+import { listPublishedCategoryCounts } from "@/server/repositories/posts";
 import { LogoutButton } from "../admin/components/logoutButton";
-import type { SignalPost } from "../lib/posts";
-import { TagSidebarSheet } from "./tagSidebarSheet";
+import { posts } from "../lib/posts";
+import type { CategoryCount } from "./categorySidebar";
+import { CategorySidebarSheet } from "./categorySidebarSheet";
 
-type SiteHeaderProps = {
-  posts: SignalPost[];
-};
+function getFallbackCategoryCounts(): CategoryCount[] {
+  const countByCategory = new Map<string, number>();
 
-export async function SiteHeader({ posts }: SiteHeaderProps) {
-  const adminAccess = await getAdminAccess();
+  for (const post of posts) {
+    countByCategory.set(post.category, (countByCategory.get(post.category) ?? 0) + 1);
+  }
+
+  return [...countByCategory.entries()].map(([name, count]) => ({ name, count }));
+}
+
+export async function SiteHeader() {
+  const [adminAccess, categoryCounts] = await Promise.all([
+    getAdminAccess(),
+    isSupabasePublicConfigured() ? listPublishedCategoryCounts() : Promise.resolve(getFallbackCategoryCounts()),
+  ]);
   const isAdmin = adminAccess.status === "allowed";
+  const totalCount = categoryCounts.reduce((total, category) => total + category.count, 0);
 
   return (
     <header className="border-b-2 border-line">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <div className="flex items-center gap-3">
-          <TagSidebarSheet posts={posts} />
+          <CategorySidebarSheet categoryCounts={categoryCounts} totalCount={totalCount} />
           <Link href="/" className="flex items-center gap-3">
             <span className="flex size-9 items-center justify-center rounded-md bg-foreground text-background">
               <Rss size={18} aria-hidden="true" />
