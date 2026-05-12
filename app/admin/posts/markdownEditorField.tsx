@@ -16,7 +16,7 @@ import {
   thematicBreakPlugin,
   toolbarPlugin,
 } from "@mdxeditor/editor";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type MarkdownEditorFieldProps = {
   name: string;
@@ -24,14 +24,27 @@ type MarkdownEditorFieldProps = {
 };
 
 export function MarkdownEditorField({ name, initialMarkdown = "" }: MarkdownEditorFieldProps) {
+  const isMountedRef = useRef(false);
   const [markdown, setMarkdown] = useState(initialMarkdown);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   return (
     <div className="mt-2 border-2 border-line bg-panel">
       <input type="hidden" name={name} value={markdown} />
       <MDXEditor
         markdown={initialMarkdown}
-        onChange={(nextMarkdown) => setMarkdown(nextMarkdown)}
+        onChange={(nextMarkdown) => {
+          if (isMountedRef.current) {
+            setMarkdown(nextMarkdown);
+          }
+        }}
         className="signalog-mdx-editor"
         contentEditableClassName="signalog-mdx-content"
         plugins={[

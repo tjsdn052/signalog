@@ -13,7 +13,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alertDialog";
 
-export function DeleteAllButton() {
+type DeleteAllButtonProps = {
+  formId: string;
+};
+
+export function DeleteAllButton({ formId }: DeleteAllButtonProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -35,7 +39,9 @@ export function DeleteAllButton() {
         <AlertDialogFooter>
           <AlertDialogCancel>취소</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <button type="submit">전체 삭제</button>
+            <button type="submit" form={formId}>
+              전체 삭제
+            </button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

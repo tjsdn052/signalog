@@ -24,6 +24,8 @@ export const metadata = {
   description: "수집된 draft 게시글을 확인합니다.",
 };
 
+const DELETE_ALL_POSTS_FORM_ID = "delete-all-posts-form";
+
 export default async function AdminPostsPage() {
   const user = await requireAdminUser();
   const isConfigured = isSupabaseAdminConfigured();
@@ -59,8 +61,8 @@ export default async function AdminPostsPage() {
                     <PublishAllButton />
                   </form>
                 ) : null}
-                <form action={deleteAllPostsAction}>
-                  <DeleteAllButton />
+                <form id={DELETE_ALL_POSTS_FORM_ID} action={deleteAllPostsAction}>
+                  <DeleteAllButton formId={DELETE_ALL_POSTS_FORM_ID} />
                 </form>
                 <LogoutButton />
               </div>
