@@ -4,7 +4,7 @@ const SUBREDDITS = ["LocalLLaMA", "programming", "reactjs", "nextjs", "MachineLe
 const REDDIT_USER_AGENT = "SignalogTrendCollector/0.1";
 const REDDIT_POST_LIMIT = 10;
 const MAX_EXCERPT_LENGTH = 240;
-const MAX_COMMENT_COUNT = 3;
+const MAX_COMMENT_COUNT = 5;
 const MAX_COMMENT_LENGTH = 180;
 
 type RedditListing = {
