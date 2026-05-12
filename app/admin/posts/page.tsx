@@ -75,7 +75,7 @@ export default async function AdminPostsPage() {
                 <col className="w-[7%]" />
                 <col className="w-[9%]" />
                 <col className="w-[8%]" />
-                <col className="w-[10%]" />
+                <col className="w-28" />
               </colgroup>
               <thead className="border-b-2 border-line text-sm text-muted">
                 <tr>
@@ -113,8 +113,8 @@ export default async function AdminPostsPage() {
                         <ExternalLink size={14} aria-hidden="true" />
                       </Link>
                     </td>
-                    <td className="px-4 py-4 align-top">
-                      <div className="flex flex-col items-stretch gap-2">
+                    <td className="px-3 py-4 align-top">
+                      <div className="mx-auto flex w-20 flex-col items-stretch gap-2">
                       <form action={publishPostAction}>
                         <input type="hidden" name="postId" value={post.id} />
                         <PublishButton />
