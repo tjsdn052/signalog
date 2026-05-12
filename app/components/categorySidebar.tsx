@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { SignalPost } from "../lib/posts";
 import { POST_CATEGORIES } from "@/server/posts/categories";
 
 type CategorySidebarProps = {
-  posts: SignalPost[];
+  categoryCounts: CategorySummary[];
+  totalCount: number;
   variant?: "panel" | "sheet";
 };
 
@@ -12,16 +12,14 @@ type CategorySummary = {
   count: number;
 };
 
-function getCategorySummaries(posts: SignalPost[]): CategorySummary[] {
-  const categoryCounts = new Map<string, number>();
+export type CategoryCount = CategorySummary;
 
-  for (const post of posts) {
-    categoryCounts.set(post.category, (categoryCounts.get(post.category) ?? 0) + 1);
-  }
+export function createCategoryCounts(categoryCounts: CategorySummary[]): CategorySummary[] {
+  const countByCategory = new Map(categoryCounts.map((category) => [category.name, category.count]));
 
   return POST_CATEGORIES.map((category) => ({
     name: category,
-    count: categoryCounts.get(category) ?? 0,
+    count: countByCategory.get(category) ?? 0,
   }));
 }
 
@@ -31,8 +29,8 @@ function getCategoryHref(category: string) {
   return `/posts?${params.toString()}`;
 }
 
-export function CategorySidebar({ posts, variant = "panel" }: CategorySidebarProps) {
-  const categories = getCategorySummaries(posts);
+export function CategorySidebar({ categoryCounts, totalCount, variant = "panel" }: CategorySidebarProps) {
+  const categories = createCategoryCounts(categoryCounts);
   const isSheet = variant === "sheet";
   const categoryListClassName = isSheet
     ? "mt-5 flex flex-col gap-2"
@@ -54,7 +52,7 @@ export function CategorySidebar({ posts, variant = "panel" }: CategorySidebarPro
           className={`${categoryLinkClassName} bg-foreground font-medium text-background`}
         >
           전체
-          <span className="font-mono text-xs">{posts.length}</span>
+          <span className="font-mono text-xs">{totalCount}</span>
         </Link>
         {categories.map((category) => (
           <Link

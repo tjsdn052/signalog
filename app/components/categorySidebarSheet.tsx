@@ -10,14 +10,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { SignalPost } from "../lib/posts";
-import { CategorySidebar } from "./categorySidebar";
+import { CategorySidebar, type CategoryCount } from "./categorySidebar";
 
 type CategorySidebarSheetProps = {
-  posts: SignalPost[];
+  categoryCounts: CategoryCount[];
+  totalCount: number;
 };
 
-export function CategorySidebarSheet({ posts }: CategorySidebarSheetProps) {
+export function CategorySidebarSheet({ categoryCounts, totalCount }: CategorySidebarSheetProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -41,7 +41,7 @@ export function CategorySidebarSheet({ posts }: CategorySidebarSheetProps) {
           </SheetDescription>
         </SheetHeader>
         <div className="p-5">
-          <CategorySidebar posts={posts} variant="sheet" />
+          <CategorySidebar categoryCounts={categoryCounts} totalCount={totalCount} variant="sheet" />
         </div>
       </SheetContent>
     </Sheet>
