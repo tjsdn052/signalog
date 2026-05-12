@@ -4,7 +4,17 @@ import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { requireAdminUser } from "@/server/auth/admin";
 import { listAdminPosts } from "@/server/repositories/posts";
 import { LogoutButton } from "../components/logoutButton";
-import { publishPostAction } from "./actions";
+import {
+  collectPostsAction,
+  deleteAllPostsAction,
+  deleteDraftPostAction,
+  publishAllDraftPostsAction,
+  publishPostAction,
+} from "./actions";
+import { CollectButton } from "./collectButton";
+import { DeleteAllButton } from "./deleteAllButton";
+import { DeleteButton } from "./deleteButton";
+import { PublishAllButton } from "./publishAllButton";
 import { PublishButton } from "./publishButton";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +43,7 @@ export default async function AdminPostsPage() {
           {user ? (
             <div className="flex flex-col gap-3 sm:items-end">
               <span className="text-sm text-muted">{user.email}</span>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 <Link
                   href="/admin/posts/new"
                   className="inline-flex h-9 items-center gap-2 border-2 border-line px-3 text-sm font-medium hover:bg-foreground hover:text-background"
@@ -41,6 +51,17 @@ export default async function AdminPostsPage() {
                   <PenLine size={15} aria-hidden="true" />
                   글 작성
                 </Link>
+                <form action={collectPostsAction}>
+                  <CollectButton />
+                </form>
+                {posts.length > 0 ? (
+                  <form action={publishAllDraftPostsAction}>
+                    <PublishAllButton />
+                  </form>
+                ) : null}
+                <form action={deleteAllPostsAction}>
+                  <DeleteAllButton />
+                </form>
                 <LogoutButton />
               </div>
             </div>
@@ -61,7 +82,15 @@ export default async function AdminPostsPage() {
 
         {posts.length > 0 ? (
           <div className="overflow-x-auto border-2 border-line">
-            <table className="w-full min-w-200 border-collapse text-left">
+            <table className="w-full min-w-240 table-fixed border-collapse text-left">
+              <colgroup>
+                <col className="w-[55%]" />
+                <col className="w-[11%]" />
+                <col className="w-[7%]" />
+                <col className="w-[9%]" />
+                <col className="w-[8%]" />
+                <col className="w-28" />
+              </colgroup>
               <thead className="border-b-2 border-line text-sm text-muted">
                 <tr>
                   <th className="px-4 py-3 font-medium">Title</th>
@@ -69,7 +98,7 @@ export default async function AdminPostsPage() {
                   <th className="px-4 py-3 font-medium">Score</th>
                   <th className="px-4 py-3 font-medium">Created</th>
                   <th className="px-4 py-3 font-medium">Source</th>
-                  <th className="px-4 py-3 font-medium">Action</th>
+                  <th className="px-4 py-3 font-medium text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,11 +127,17 @@ export default async function AdminPostsPage() {
                         <ExternalLink size={14} aria-hidden="true" />
                       </Link>
                     </td>
-                    <td className="px-4 py-4 align-top">
-                      <form action={publishPostAction}>
-                        <input type="hidden" name="postId" value={post.id} />
-                        <PublishButton />
-                      </form>
+                    <td className="px-3 py-4 align-top">
+                      <div className="mx-auto flex w-20 flex-col items-stretch gap-2">
+                        <form action={publishPostAction}>
+                          <input type="hidden" name="postId" value={post.id} />
+                          <PublishButton />
+                        </form>
+                        <form action={deleteDraftPostAction}>
+                          <input type="hidden" name="postId" value={post.id} />
+                          <DeleteButton />
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 ))}

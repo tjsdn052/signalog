@@ -393,9 +393,41 @@ export async function publishPost(postId: string): Promise<PublishedPost> {
   };
 }
 
+export async function publishAllDraftPosts(): Promise<PublishedPost[]> {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      status: "published",
+      published_at: now,
+      updated_at: now,
+    })
+    .eq("status", "draft")
+    .select("id, slug");
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((post) => ({
+    id: post.id as string,
+    slug: post.slug as string,
+  }));
+}
+
 export async function deletePost(postId: string) {
   const supabase = getSupabaseAdmin();
   const { error } = await supabase.from("posts").delete().eq("id", postId);
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function deleteAllPosts() {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.from("posts").delete().not("id", "is", null);
 
   if (error) {
     throw error;
