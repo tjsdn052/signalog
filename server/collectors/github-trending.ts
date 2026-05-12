@@ -163,6 +163,12 @@ async function collectTrendingLanguage(language: string): Promise<RawTrendItem[]
         publishedAt: item.publishedAt,
         score: item.score,
         excerpt: excerpt || item.description,
+        rawPayload: {
+          repoPath,
+          description: item.description,
+          readmeExcerpt,
+          starsToday: item.score,
+        },
       };
     }),
   );

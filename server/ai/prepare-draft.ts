@@ -7,12 +7,15 @@ import { translateTrendTitle } from "./translate";
 export function prepareDraftPost(item: RawTrendItem): DraftTrendPost {
   const classification = classifyTrendItem(item);
   const signalScore = Math.min(100, Math.max(0, item.score ?? 50));
+  const summary = summarizeTrendItem(item);
 
   return {
     sourceItem: item,
     title: translateTrendTitle(item),
-    excerpt: summarizeTrendItem(item),
-    summary: summarizeTrendItem(item),
+    excerpt: summary,
+    aiSummary: summary,
+    summary,
+    contentMarkdown: summary,
     category: classification.category,
     tags: classification.tags,
     signalScore,

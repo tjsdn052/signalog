@@ -4,6 +4,7 @@ export type RawTrendItem = {
   url: string;
   title: string;
   excerpt?: string;
+  rawPayload?: Record<string, unknown>;
   publishedAt?: string;
   score?: number;
 };

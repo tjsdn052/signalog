@@ -16,6 +16,8 @@ type RedditListing = {
 };
 
 type RedditPost = {
+  id?: string;
+  author?: string;
   title?: string;
   url?: string;
   permalink?: string;
@@ -179,6 +181,17 @@ async function toRawTrendItem(subreddit: string, post: RedditPost): Promise<RawT
     url: getRedditPostUrl(post),
     title: post.title?.trim() ?? "",
     excerpt: getExcerpt(post, comments),
+    rawPayload: {
+      subreddit,
+      id: post.id,
+      author: post.author,
+      permalink: post.permalink,
+      outboundUrl: post.url,
+      selftext: post.selftext,
+      score: post.score,
+      numComments: post.num_comments,
+      comments,
+    },
     publishedAt: getPublishedAt(post),
     score: getSignalScore(post),
   };

@@ -24,6 +24,8 @@ If the project was created with "Automatically expose new tables and functions" 
 
 If your existing project was created before Reddit collection support, run `supabase/reddit-source-type.sql` once before calling `/api/jobs/collect`.
 
+If your existing project was created before AI-generated post fields, run `supabase/ai-generated-post-fields.sql` once. This adds `raw_items.raw_payload` for original collection payloads and `posts.ai_summary` for generated summaries.
+
 The initial schema includes:
 
 - `sources`
