@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import NextTopLoader from "nextjs-toploader";
 import "@mdxeditor/editor/style.css";
 import { SiteFooter } from "./components/siteFooter";
 import { SiteHeader } from "./components/siteHeader";
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="min-h-full bg-background text-foreground antialiased">
+        <NextTopLoader color="var(--foreground)" height={3} showSpinner={false} shadow={false} />
         <SiteHeader />
         {children}
         <SiteFooter />
