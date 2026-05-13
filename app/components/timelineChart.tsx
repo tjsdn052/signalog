@@ -1,74 +1,39 @@
-"use client";
-
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-} from "recharts";
 import type { TimelineEvent } from "../lib/posts";
 
 type TimelineChartProps = {
   events: TimelineEvent[];
 };
 
-type TimelineTooltipProps = {
-  active?: boolean;
-  payload?: Array<{
-    payload: TimelineEvent;
-  }>;
-};
-
-function TimelineTooltip({ active, payload }: TimelineTooltipProps) {
-  if (!active || !payload?.[0]) {
-    return null;
-  }
-
-  const event = payload[0].payload;
-
+export function TimelineChart({ events }: TimelineChartProps) {
   return (
-    <div className="border-2 border-line bg-background p-3 text-sm shadow-none">
-      <p className="font-mono text-foreground">{event.month}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {event.keywords.map((keyword) => (
-          <span key={keyword} className="rounded-md border-2 border-line px-2 py-1 text-xs text-muted">
-            {keyword}
-          </span>
+    <div className="overflow-x-auto pb-3">
+      <div className="relative flex min-w-180 items-start justify-between gap-6 px-2 pt-16">
+        <div className="absolute top-23 right-2 left-2 h-0.5 bg-foreground" aria-hidden="true" />
+
+        {events.map((event) => (
+          <div key={event.month} className="group relative flex min-w-20 flex-1 flex-col items-center">
+            <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-5 hidden w-52 -translate-x-1/2 border-2 border-line bg-background p-3 text-left shadow-none group-hover:block group-focus-within:block">
+              <p className="font-mono text-sm text-foreground">{event.month}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {event.keywords.map((keyword) => (
+                  <span key={keyword} className="rounded-md border-2 border-line px-2 py-1 text-xs text-muted">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              aria-label={`${event.month} 키워드: ${event.keywords.join(", ")}`}
+              className="relative z-1 flex size-5 items-center justify-center rounded-full border-2 border-foreground bg-background outline-none transition-colors hover:bg-foreground focus:bg-foreground"
+            >
+              <span className="size-1.5 rounded-full bg-foreground group-hover:bg-background group-focus-within:bg-background" />
+            </button>
+            <span className="mt-3 font-mono text-xs text-muted">{event.month}</span>
+          </div>
         ))}
       </div>
     </div>
-  );
-}
-
-export function TimelineChart({ events }: TimelineChartProps) {
-  const flatEvents = events.map((event) => ({
-    ...event,
-    position: 1,
-  }));
-
-  return (
-    <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
-      <LineChart data={flatEvents} margin={{ top: 24, right: 20, bottom: 8, left: 20 }}>
-        <XAxis
-          dataKey="month"
-          axisLine={{ stroke: "var(--line)", strokeWidth: 2 }}
-          tick={{ fill: "var(--muted)", fontSize: 12 }}
-          tickLine={{ stroke: "var(--line)", strokeWidth: 2 }}
-          interval={0}
-          padding={{ left: 20, right: 20 }}
-        />
-        <Tooltip content={<TimelineTooltip />} cursor={false} />
-        <Line
-          type="linear"
-          dataKey="position"
-          stroke="var(--foreground)"
-          strokeWidth={2}
-          isAnimationActive={false}
-          dot={{ r: 5, fill: "var(--background)", stroke: "var(--foreground)", strokeWidth: 2 }}
-          activeDot={{ r: 7, fill: "var(--foreground)", stroke: "var(--foreground)", strokeWidth: 2 }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
   );
 }

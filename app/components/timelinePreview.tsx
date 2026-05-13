@@ -1,15 +1,9 @@
-"use client";
-
-import dynamic from "next/dynamic";
+import { TimelineChart } from "./timelineChart";
 import type { TimelineEvent } from "../lib/posts";
 
 type TimelinePreviewProps = {
   events: TimelineEvent[];
 };
-
-const TimelineChart = dynamic(() => import("./timelineChart").then((mod) => mod.TimelineChart), {
-  ssr: false,
-});
 
 export function TimelinePreview({ events }: TimelinePreviewProps) {
   return (
@@ -20,7 +14,7 @@ export function TimelinePreview({ events }: TimelinePreviewProps) {
           <h2 className="mt-2 text-2xl font-semibold">기술 흐름 타임라인</h2>
         </div>
 
-        <div className="h-37.5 min-w-0">
+        <div className="min-w-0">
           <TimelineChart events={events} />
         </div>
       </div>
