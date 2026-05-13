@@ -6,9 +6,9 @@ type TimelineChartProps = {
 
 export function TimelineChart({ events }: TimelineChartProps) {
   return (
-    <div className="min-h-56 overflow-x-auto pb-4">
-      <div className="relative flex min-w-180 items-start justify-between gap-6 px-2 pt-32">
-        <div className="absolute top-39 right-2 left-2 h-0.5 bg-foreground" aria-hidden="true" />
+    <div className="min-h-80 overflow-x-auto pb-4">
+      <div className="relative flex min-h-76 min-w-180 items-start justify-between gap-6 px-2 pt-48">
+        <div className="absolute top-50 right-2 left-2 h-0.5 bg-foreground" aria-hidden="true" />
 
         {events.map((event) => (
           <div key={event.month} className="group relative flex min-w-20 flex-1 flex-col items-center">
