@@ -7,15 +7,32 @@ type AdminAccess =
   | { status: "allowed"; user: User }
   | { status: "missing-config" | "unauthenticated" | "forbidden"; user: User | null };
 
+function isInvalidRefreshTokenError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return error.message.toLowerCase().includes("invalid refresh token");
+}
+
 export async function getAdminAccess(): Promise<AdminAccess> {
   if (!isSupabaseAuthConfigured()) {
     return { status: "missing-config", user: null };
   }
 
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: User | null = null;
+
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (error) {
+    if (isInvalidRefreshTokenError(error)) {
+      return { status: "unauthenticated", user: null };
+    }
+
+    throw error;
+  }
 
   if (!user) {
     return { status: "unauthenticated", user: null };
