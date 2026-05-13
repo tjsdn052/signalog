@@ -1,12 +1,11 @@
-import { Rss, Search, ShieldCheck } from "lucide-react";
+import { Rss, Search } from "lucide-react";
 import Link from "next/link";
 import { isSupabasePublicConfigured } from "@/lib/supabase/config";
-import { getAdminAccess } from "@/server/auth/admin";
 import { listPublishedCategoryCounts } from "@/server/repositories/posts";
-import { LogoutButton } from "../admin/components/logoutButton";
 import { posts } from "../lib/posts";
 import type { CategoryCount } from "./categorySidebar";
 import { CategorySidebarSheet } from "./categorySidebarSheet";
+import { HeaderAdminActions } from "./headerAdminActions";
 
 function getFallbackCategoryCounts(): CategoryCount[] {
   const countByCategory = new Map<string, number>();
@@ -19,11 +18,7 @@ function getFallbackCategoryCounts(): CategoryCount[] {
 }
 
 export async function SiteHeader() {
-  const [adminAccess, categoryCounts] = await Promise.all([
-    getAdminAccess(),
-    isSupabasePublicConfigured() ? listPublishedCategoryCounts() : Promise.resolve(getFallbackCategoryCounts()),
-  ]);
-  const isAdmin = adminAccess.status === "allowed";
+  const categoryCounts = isSupabasePublicConfigured() ? await listPublishedCategoryCounts() : getFallbackCategoryCounts();
   const totalCount = categoryCounts.reduce((total, category) => total + category.count, 0);
 
   return (
@@ -42,28 +37,7 @@ export async function SiteHeader() {
           </Link>
         </div>
         <div className="flex items-center gap-2">
-          {isAdmin ? (
-            <>
-            <Link
-              href="/admin/posts"
-              className="inline-flex h-10 items-center gap-2 border-2 border-line bg-panel px-3 text-sm font-medium text-foreground hover:bg-foreground hover:text-background md:hidden"
-            >
-              <ShieldCheck size={15} aria-hidden="true" />
-              관리자
-            </Link>
-            <div className="hidden items-center gap-2 md:flex">
-              <Link
-                href="/admin/posts"
-                className="inline-flex h-10 items-center gap-2 border-2 border-line bg-panel px-3 text-sm font-medium text-foreground hover:bg-foreground hover:text-background"
-              >
-                <ShieldCheck size={15} aria-hidden="true" />
-                관리자
-              </Link>
-              <span className="max-w-40 truncate text-xs text-muted">{adminAccess.user.email}</span>
-              <LogoutButton />
-            </div>
-            </>
-          ) : null}
+          <HeaderAdminActions />
           <form action="/search" className="hidden h-10 w-72 items-center gap-3 border-2 border-line bg-panel px-3 text-sm text-muted sm:flex">
             <Search size={16} aria-hidden="true" />
             <label htmlFor="site-search-query" className="sr-only">
