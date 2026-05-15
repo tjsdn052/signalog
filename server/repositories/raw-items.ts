@@ -1,15 +1,19 @@
 import type { RawTrendItem } from "../collectors/types";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { normalizeSourceUrl } from "../collectors/url";
 
 export function dedupeRawItems(items: RawTrendItem[]) {
   const seenUrls = new Set<string>();
 
   return items.filter((item) => {
-    if (seenUrls.has(item.url)) {
+    const normalizedUrl = normalizeSourceUrl(item.url);
+
+    if (seenUrls.has(normalizedUrl)) {
       return false;
     }
 
-    seenUrls.add(item.url);
+    item.url = normalizedUrl;
+    seenUrls.add(normalizedUrl);
     return true;
   });
 }
