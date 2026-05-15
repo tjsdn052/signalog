@@ -4,6 +4,7 @@ import type { SignalPost } from "@/app/lib/posts";
 import type { DraftTrendPost } from "../ai/types";
 import type { PostCategory } from "../posts/categories";
 import { createSlug } from "../utils/slug";
+import { normalizeSourceUrl } from "../collectors/url";
 
 export type AdminPostListItem = {
   id: string;
@@ -31,6 +32,11 @@ export type PublishedPost = {
 export type PublishedPostList = {
   posts: SignalPost[];
   total: number;
+};
+
+export type ExistingPostSourceStatus = {
+  sourceUrl: string;
+  status: string;
 };
 
 type SaveDraftPostInput = {
@@ -123,29 +129,146 @@ async function upsertTag(name: string) {
   return data.id as string;
 }
 
-export async function saveDraftPost(input: SaveDraftPostInput) {
+async function replacePostTags(postId: string, tags: string[]) {
   const supabase = getSupabaseAdmin();
-  const slug = createSlug(input.draft.title);
+  const { error: deleteTagError } = await supabase.from("post_tags").delete().eq("post_id", postId);
+
+  if (deleteTagError) {
+    throw deleteTagError;
+  }
+
+  const tagIds = await Promise.all(tags.map((tag) => upsertTag(tag)));
+
+  if (tagIds.length === 0) {
+    return;
+  }
+
+  const { error: tagError } = await supabase
+    .from("post_tags")
+    .upsert(tagIds.map((tagId) => ({ post_id: postId, tag_id: tagId })));
+
+  if (tagError) {
+    throw tagError;
+  }
+}
+
+async function getExistingPostBySourceUrl(sourceUrl: string) {
+  const supabase = getSupabaseAdmin();
+  const normalizedSourceUrl = normalizeSourceUrl(sourceUrl);
   const { data, error } = await supabase
     .from("posts")
-    .upsert(
-      {
+    .select("id, status")
+    .eq("source_url", normalizedSourceUrl)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  const posts = (data ?? []) as Array<{ id: string; status: string }>;
+  const publishedPost = posts.find((post) => post.status === "published");
+
+  return publishedPost ?? posts[0] ?? null;
+}
+
+async function createUniquePostSlug(title: string) {
+  const supabase = getSupabaseAdmin();
+  const baseSlug = createSlug(title);
+  const { data, error } = await supabase.from("posts").select("slug").like("slug", `${baseSlug}%`);
+
+  if (error) {
+    throw error;
+  }
+
+  const existingSlugs = new Set((data ?? []).map((post) => post.slug as string));
+
+  if (!existingSlugs.has(baseSlug)) {
+    return baseSlug;
+  }
+
+  let suffix = 2;
+
+  while (existingSlugs.has(`${baseSlug}-${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${baseSlug}-${suffix}`;
+}
+
+export async function listExistingPostSourceStatuses(sourceUrls: string[]): Promise<ExistingPostSourceStatus[]> {
+  if (sourceUrls.length === 0) {
+    return [];
+  }
+
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("posts")
+    .select("source_url, status")
+    .in("source_url", sourceUrls.map(normalizeSourceUrl));
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((post) => ({
+    sourceUrl: post.source_url as string,
+    status: post.status as string,
+  }));
+}
+
+export async function saveDraftPost(input: SaveDraftPostInput) {
+  const supabase = getSupabaseAdmin();
+  const sourceUrl = normalizeSourceUrl(input.draft.sourceItem.url);
+  const existingPost = await getExistingPostBySourceUrl(sourceUrl);
+
+  if (existingPost?.status === "published") {
+    return existingPost.id;
+  }
+
+  if (existingPost) {
+    const { data, error } = await supabase
+      .from("posts")
+      .update({
         raw_item_id: input.rawItemId,
-        slug,
         title: input.draft.title,
         excerpt: input.draft.excerpt,
         ai_summary: input.draft.aiSummary,
         summary: input.draft.summary,
         content_markdown: input.draft.contentMarkdown,
-        source_url: input.draft.sourceItem.url,
         category: input.draft.category,
         signal_score: input.draft.signalScore,
-        status: "draft",
-      },
-      {
-        onConflict: "slug",
-      },
-    )
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", existingPost.id)
+      .select("id")
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    const postId = data.id as string;
+    await replacePostTags(postId, input.draft.tags);
+
+    return postId;
+  }
+
+  const slug = await createUniquePostSlug(input.draft.title);
+  const { data, error } = await supabase
+    .from("posts")
+    .insert({
+      raw_item_id: input.rawItemId,
+      slug,
+      title: input.draft.title,
+      excerpt: input.draft.excerpt,
+      ai_summary: input.draft.aiSummary,
+      summary: input.draft.summary,
+      content_markdown: input.draft.contentMarkdown,
+      source_url: sourceUrl,
+      category: input.draft.category,
+      signal_score: input.draft.signalScore,
+      status: "draft",
+    })
     .select("id")
     .single();
 
@@ -154,17 +277,7 @@ export async function saveDraftPost(input: SaveDraftPostInput) {
   }
 
   const postId = data.id as string;
-  const tagIds = await Promise.all(input.draft.tags.map((tag) => upsertTag(tag)));
-
-  if (tagIds.length > 0) {
-    const { error: tagError } = await supabase
-      .from("post_tags")
-      .upsert(tagIds.map((tagId) => ({ post_id: postId, tag_id: tagId })));
-
-    if (tagError) {
-      throw tagError;
-    }
-  }
+  await replacePostTags(postId, input.draft.tags);
 
   return postId;
 }
