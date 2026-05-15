@@ -1,8 +1,11 @@
 import { collectGithubTrendingItems } from "../collectors/github-trending";
+import { collectHackerNewsItems } from "../collectors/hacker-news";
 import { collectRedditItems } from "../collectors/reddit";
+import { collectDevToItems } from "../collectors/dev-to";
 import type { RawTrendItem } from "../collectors/types";
 import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { prepareDraftPost } from "../ai/prepare-draft";
+import { selectDraftCandidatesWithAI } from "../ai/select-candidates";
 import type { DraftTrendPost } from "../ai/types";
 import { persistCollection } from "../repositories/collection-storage";
 import { dedupeRawItems } from "../repositories/raw-items";
@@ -24,7 +27,12 @@ export type CollectTrendsResult = {
 };
 
 async function collectRawTrendItems() {
-  const results = await Promise.allSettled([collectRedditItems(), collectGithubTrendingItems()]);
+  const results = await Promise.allSettled([
+    collectRedditItems(),
+    collectGithubTrendingItems(),
+    collectHackerNewsItems(),
+    collectDevToItems(),
+  ]);
 
   return results.flatMap((result) => (result.status === "fulfilled" ? result.value : []));
 }
@@ -43,7 +51,9 @@ async function getDraftCandidates(items: RawTrendItem[], canPersist: boolean) {
     existingPostStatuses.filter((post) => post.status === "published").map((post) => post.sourceUrl),
   );
 
-  return items.filter((item) => !publishedSourceUrls.has(item.url)).slice(0, MAX_DRAFT_POSTS_PER_RUN);
+  const newOrDraftItems = items.filter((item) => !publishedSourceUrls.has(item.url));
+
+  return selectDraftCandidatesWithAI(newOrDraftItems, MAX_DRAFT_POSTS_PER_RUN);
 }
 
 export async function collectTrends(): Promise<CollectTrendsResult> {

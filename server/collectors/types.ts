@@ -1,6 +1,6 @@
 export type RawTrendItem = {
   source: string;
-  sourceType: "rss" | "github" | "hacker-news" | "reddit";
+  sourceType: "rss" | "github" | "hacker-news" | "reddit" | "dev-to";
   url: string;
   title: string;
   excerpt?: string;

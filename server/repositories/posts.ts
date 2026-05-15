@@ -4,6 +4,7 @@ import type { SignalPost } from "@/app/lib/posts";
 import type { DraftTrendPost } from "../ai/types";
 import type { PostCategory } from "../posts/categories";
 import { createSlug } from "../utils/slug";
+import { normalizeSourceUrl } from "../collectors/url";
 
 export type AdminPostListItem = {
   id: string;
@@ -153,10 +154,11 @@ async function replacePostTags(postId: string, tags: string[]) {
 
 async function getExistingPostBySourceUrl(sourceUrl: string) {
   const supabase = getSupabaseAdmin();
+  const normalizedSourceUrl = normalizeSourceUrl(sourceUrl);
   const { data, error } = await supabase
     .from("posts")
     .select("id, status")
-    .eq("source_url", sourceUrl)
+    .eq("source_url", normalizedSourceUrl)
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -199,7 +201,10 @@ export async function listExistingPostSourceStatuses(sourceUrls: string[]): Prom
   }
 
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase.from("posts").select("source_url, status").in("source_url", sourceUrls);
+  const { data, error } = await supabase
+    .from("posts")
+    .select("source_url, status")
+    .in("source_url", sourceUrls.map(normalizeSourceUrl));
 
   if (error) {
     throw error;
@@ -213,7 +218,8 @@ export async function listExistingPostSourceStatuses(sourceUrls: string[]): Prom
 
 export async function saveDraftPost(input: SaveDraftPostInput) {
   const supabase = getSupabaseAdmin();
-  const existingPost = await getExistingPostBySourceUrl(input.draft.sourceItem.url);
+  const sourceUrl = normalizeSourceUrl(input.draft.sourceItem.url);
+  const existingPost = await getExistingPostBySourceUrl(sourceUrl);
 
   if (existingPost?.status === "published") {
     return existingPost.id;
@@ -258,7 +264,7 @@ export async function saveDraftPost(input: SaveDraftPostInput) {
       ai_summary: input.draft.aiSummary,
       summary: input.draft.summary,
       content_markdown: input.draft.contentMarkdown,
-      source_url: input.draft.sourceItem.url,
+      source_url: sourceUrl,
       category: input.draft.category,
       signal_score: input.draft.signalScore,
       status: "draft",
